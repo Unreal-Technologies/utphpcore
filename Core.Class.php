@@ -152,6 +152,17 @@ class Core
                 $head -> append($child);
             }
         });
+        
+        $ob = ob_get_clean();
+        if(strlen($ob) !== 0) //Attach output buffer to Xhtml, and clear
+        {
+            XHTML -> get('body', function(\UTphpcore\GUI\NoHtml\Xhtml $body) use($ob)
+            {
+                $text = $ob.((string)$body);
+                $body -> clear();
+                $body -> text($text);
+            });
+        }
 
         //output
         echo XHTML;
