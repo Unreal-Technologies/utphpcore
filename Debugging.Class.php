@@ -64,7 +64,7 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(\Php2Core\GUI\NoHTML\Xhtml $body) use(&$hasBody, $ex)
+            XHTML -> get('body', function(\Utphpcore\GUI\NoHTML\Xhtml $body) use(&$hasBody, $ex)
             {
                 self::$dumpAsHtml = true;
                 $res = self::dump($ex);
@@ -182,7 +182,6 @@ class Debugging
             echo '<span>';
             $doPrint = is_array($argument) || is_object($argument);
             echo '<span>'.$tokens[$idx].'</span> = <span>';
-            //echo '<span>Arg[\''.$idx.'\']</span> = <span>';
             if($doPrint)
             {
                 echo '<xmp>'.print_r($argument, true).'</xmp>';
