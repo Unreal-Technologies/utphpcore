@@ -34,10 +34,10 @@ class Core
         $new = str_replace([$root.'\\', $root.'/', '\\', '//', ':/'], ['', '', '/', '/', '://'], $path);
         if($new !== $path)
         {
-            return $basePath.'/'.$new;
+            return $basePath.$new;
         }
 
-        throw new Php2Core\Exceptions\NotImplementedException($path);
+        throw new Utphpcore\Exceptions\NotImplementedException($path);
     }
     
     /**
@@ -163,7 +163,6 @@ class Core
                 $body -> text($text);
             });
         }
-
         //output
         echo XHTML;
     }
