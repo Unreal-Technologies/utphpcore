@@ -24,7 +24,7 @@ class Debugging
     {
         $hasBody = false;
         
-        XHTML -> get('body', function(\Php2Core\GUI\NoHTML\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
+        XHTML -> get('body', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
         {
             $trace = self::getTrace($body);
             
@@ -53,6 +53,28 @@ class Debugging
         exit;
     }
     
+    /**
+     * @param \Php2Core\GUI\NoHtml\Xhtml $body
+     * @return \Php2Core\GUI\NoHtml\Xhtml|null
+     */
+    private static function getTrace(\Utphpcore\GUI\NoHtml\Xhtml $body): ?\Utphpcore\GUI\NoHtml\Xhtml
+    {
+        $trace = null;
+        $body -> get('table@#trace', function(\Utphpcore\GUI\NoHtml\Xhtml $table) use(&$trace)
+        {
+            $trace = $table;
+        });
+        if($trace === null)
+        {
+            self::trace();
+            $body -> get('table@#trace', function(\Utphpcore\GUI\NoHtml\Xhtml $table) use(&$trace)
+            {
+                $trace = $table;
+            });
+        }
+        return $trace;
+    }
+    
      /**
      * @param \Throwable $ex
      * @return void
@@ -64,7 +86,7 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(\Utphpcore\GUI\NoHTML\Xhtml $body) use(&$hasBody, $ex)
+            XHTML -> get('body', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use(&$hasBody, $ex)
             {
                 self::$dumpAsHtml = true;
                 $res = self::dump($ex);
@@ -137,7 +159,7 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(Php2Core\GUI\NoHTML\Xhtml $body) use($pathReversed)
+            XHTML -> get('body', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use($pathReversed)
             {
                 $table = $body -> add('table@#trace');
                 $table -> add('tr/th@colspan=3') -> text('Trace');

@@ -1,0 +1,115 @@
+#execution-time, #version, #copyright
+{
+    color: gray;
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    font-size: 8pt;
+    padding: 5px;
+}
+
+#version
+{
+    right: 0px;
+    left: unset;
+}
+
+#copyright
+{
+    width: 100%;
+    text-align: center;
+}
+
+#version ul
+{
+    padding-inline-start: 20px;
+    white-space: nowrap;
+}
+
+#version ul:first-child
+{
+    list-style: none;
+    display: none;
+    text-align: left;
+}
+
+#version:hover ul:first-child
+{
+    display: block;
+    position: absolute;
+    right: 0px;
+    bottom: 10px;
+    padding: 5px;
+}
+
+#version li i
+{
+    padding-right: 5px;
+}
+
+.vertical-divider
+{
+    border-width: 0px;
+    display: block;
+    background-color: white;
+    width: 1px;
+    height: 100%;
+    border-style: solid;
+}
+
+.blank
+{
+    background-color: unset !important;
+}
+
+.required
+{
+    color: #aa0000;
+    font-size: 14pt;
+}
+
+.nud
+{
+    position: absolute;
+    display: block;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.dump
+{
+    border-width: 1px;
+    border-style: solid;
+    width: 95%;
+    margin: auto;
+    background-color: #000000;
+    font-family: monospace;
+    border-style: outset;
+    border-color: #c0c0c0;
+    margin-bottom: 5px;
+    overflow: scroll;
+}
+
+.dump h2
+{
+    text-align: center;
+    color: gray;
+}
+
+.dump span
+{
+    color: #aaaa00;
+}
+
+.dump div span span:nth-child(odd)
+{
+    color: #aa0000;
+}
+
+.dump div span span:nth-child(even)
+{
+    color: #00aa00;
+}

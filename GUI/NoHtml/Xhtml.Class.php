@@ -36,7 +36,12 @@ class Xhtml implements IXhtml
     /**
      * @var string|null
      */
-    private ?string $prefix = null;
+    private ?string $sPrefix = null;
+    
+    /**
+     * @var bool
+     */
+    private bool $bShort = false;
     
     /**
      * @throws \Exception
@@ -44,7 +49,7 @@ class Xhtml implements IXhtml
     #[\Override]
     public function __construct(string $prefix = null)
     {
-        $this -> prefix = $prefix;
+        $this -> sPrefix = $prefix;
         $this -> oAttributes = new Attributes();
         if(!defined('XHTML'))
         {
@@ -60,20 +65,29 @@ class Xhtml implements IXhtml
     {
         $tab = str_repeat('  ', $this -> iPosition);
         
-        $out = $this -> prefix;
-        $out .= $tab.'<'.$this -> sTag.$this -> oAttributes.'>'."\r\n";
-        foreach($this -> aChildren as $child)
+        $out = '';
+        if($this -> bShort)
         {
-            if($child instanceof XHtml)
-            {
-                $out .= (string)$child;
-            }
-            else
-            {
-                $out .= $child."\r\n";
-            }
+            $out = $this -> sPrefix;
+            $out .= $tab.'<'.$this -> sTag.$this -> oAttributes.' />'."\r\n";
         }
-        $out .= $tab.'</'.$this -> sTag.'>'."\r\n";
+        else
+        {
+            $out = $this -> sPrefix;
+            $out .= $tab.'<'.$this -> sTag.$this -> oAttributes.'>'."\r\n";
+            foreach($this -> aChildren as $child)
+            {
+                if($child instanceof XHtml)
+                {
+                    $out .= (string)$child;
+                }
+                else
+                {
+                    $out .= $child."\r\n";
+                }
+            }
+            $out .= $tab.'</'.$this -> sTag.'>'."\r\n";
+        }
         
         return $out;
     }
@@ -109,11 +123,11 @@ class Xhtml implements IXhtml
     /**
      * @param string $tag
      * @param \Closure $callback
+     * @param bool $short
      * @return Xhtml
-     * @throws \Php2Core\Exceptions\NotImplementedException
      */
     #[\Override]
-    public function add(string $tag, \Closure $callback=null): Xhtml
+    public function add(string $tag, \Closure $callback=null, bool $short = false): Xhtml
     {
         $current = $this;
         $components = explode('/', $tag);
@@ -168,6 +182,7 @@ class Xhtml implements IXhtml
             
             $current = $obj;
         }
+        $current -> bShort = $short;
         
         return $current;
     }

@@ -12,7 +12,7 @@ class Core
     /**
      * @var array
      */
-    private array $data = [];
+    private array $aData = [];
     
     /**
      * @param \Closure $cb
@@ -46,7 +46,7 @@ class Core
      */
     public function set(int $property, mixed $value)
     {
-        $this -> data[$property] = $value;
+        $this -> aData[$property] = $value;
     }
     
     /**
@@ -55,9 +55,9 @@ class Core
      */
     public function get(int $property): mixed
     {
-        if(isset($this -> data[$property]))
+        if(isset($this -> aData[$property]))
         {
-            return $this -> data[$property];
+            return $this -> aData[$property];
         }
         return null;
     }
@@ -96,7 +96,7 @@ class Core
      */
     public static function shutdown(): void
     {
-        \XHTML -> get('body', function(\UTphpcore\GUI\NoHtml\Xhtml $body)
+        XHTML -> get('body', function(\UTphpcore\GUI\NoHtml\Xhtml $body)
         {
             $dif = microtime(true) - UTPHPCORE -> get(self::Start);
             
@@ -116,12 +116,12 @@ class Core
                 $link -> attributes() -> set('rel', 'icon');
                 $link -> attributes() -> set('type', 'image/x-icon');
                 $link -> attributes() -> set('href', UTPHPCORE -> physicalToRelativePath(__DIR__.'/Assets/Images/favicon.ico'));
-            });
+            }, true);
             $head -> add('link', function(\UTphpcore\GUI\NoHtml\Xhtml $link)
             {
                 $link -> attributes() -> set('rel', 'stylesheet');
                 $link -> attributes() -> set('href', 'https://fonts.googleapis.com/icon?family=Material+Icons');
-            });
+            }, true);
             
             foreach(\UTphpcore\IO\Directory::fromString(__DIR__.'/Assets/Css') -> list('/\.css$/i') as $entry)
             {
@@ -131,7 +131,7 @@ class Core
                     {
                         $link -> attributes() -> set('rel', 'stylesheet');
                         $link -> attributes() -> set('href', UTPHPCORE -> physicalToRelativePath($entry -> path()));
-                    });
+                    }, true);
                 }
             }
             
@@ -163,6 +163,7 @@ class Core
                 $body -> text($text);
             });
         }
+        
         //output
         echo XHTML;
     }

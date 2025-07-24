@@ -15,15 +15,12 @@ set_exception_handler('Utphpcore\Debugging::exceptionHandler');
 register_shutdown_function('\Utphpcore\Core::shutdown');
 \Utphpcore\Core::initialize();
 
-if(!defined('XHTML'))
-{
-    $xhtml = new \Utphpcore\GUI\NoHtml\Xhtml('<!DOCTYPE html>');
-    $head = $xhtml -> add('head');
-    $xhtml -> add('body');
+$xhtml = new \Utphpcore\GUI\NoHtml\Xhtml('<!DOCTYPE html>');
+$head = $xhtml -> add('head');
+$xhtml -> add('body');
 
-    $head -> add('script', function(\Utphpcore\GUI\NoHtml\Xhtml $script)
-    {
-        $script -> attributes() -> set('type', 'text/javascript');
-        $script -> attributes() -> set('src', UTPHPCORE -> physicalToRelativePath(__DIR__.'/GUI/NoHhtml/Materialize/Form.js'));
-    });
-}
+$head -> add('script', function(\Utphpcore\GUI\NoHtml\Xhtml $script)
+{
+    $script -> attributes() -> set('type', 'text/javascript');
+    $script -> attributes() -> set('src', UTPHPCORE -> physicalToRelativePath(__DIR__.'/GUI/NoHhtml/Materialize/Form.js'));
+});
