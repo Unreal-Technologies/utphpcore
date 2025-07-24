@@ -26,21 +26,24 @@ class Debugging
     {
         $hasBody = false;
         
-        XHTML -> get('body', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
+        if(defined('XHTML'))
         {
-            $trace = self::getTrace($body);
-            
-            $body -> clear();
-            $body -> add('h2') -> text('Utphpcore::ErrorHandler');
-            $body -> add('xmp') -> text(print_r($errfile.':'.$errline, true));
-            $body -> add('xmp') -> text($errno."\r\n".print_r($errstr, true));
-            if($trace !== null)
+            XHTML -> get('body', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
             {
-                $body -> append($trace);
-            }
+                $trace = self::getTrace($body);
 
-            $hasBody = true; 
-        });
+                $body -> clear();
+                $body -> add('h2') -> text('Utphpcore::ErrorHandler');
+                $body -> add('xmp') -> text(print_r($errfile.':'.$errline, true));
+                $body -> add('xmp') -> text($errno."\r\n".print_r($errstr, true));
+                if($trace !== null)
+                {
+                    $body -> append($trace);
+                }
+
+                $hasBody = true; 
+            });
+        }
 
         if(!$hasBody)
         {
