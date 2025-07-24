@@ -1,6 +1,9 @@
 <?php
 namespace Utphpcore\GUI\NoHtml;
 
+require_once('IXhtml.Interface.php');
+require_once('Attributes.Class.php');
+
 /**
  * Description of XHtml
  *

@@ -1,5 +1,7 @@
 <?php
 namespace Utphpcore;
+require_once('IO/File.Class.php');
+require_once('Source/Analyzers/PhpAnalyzer/Tokens.Class.php');
 
 class Debugging
 {

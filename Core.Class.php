@@ -1,5 +1,9 @@
 <?php
 namespace Utphpcore;
+require_once('Data/Exceptions/NotImplementedException.Class.php');
+require_once('Data/Version.Class.php');
+require_once('Data/Configuration.Class.php');
+require_once('IO/Directory.Class.php');
 
 class Core
 {
@@ -8,6 +12,7 @@ class Core
     public const Root = 0x01000000;
     public const Temp = 0x01000001;
     public const Cache = 0x01000002;
+    public const Configuration = 0x00000002;
     
     /**
      * @var array
@@ -88,6 +93,7 @@ class Core
             $core -> set($core::Cache, $cache);
             $core -> set($core::Start, microtime(true));
             $core -> set($core::Version, new \Utphpcore\Data\Version('Utphpcore', 1,0,0,0, 'https://github.com/Unreal-Technologies/utphpcore'));
+            $core -> set($core::Configuration, new \Utphpcore\Data\Configuration($core));
         }));
     }
     

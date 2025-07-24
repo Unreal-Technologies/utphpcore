@@ -1,5 +1,6 @@
 <?php
 namespace Utphpcore\IO;
+require_once('IDiskManager.Interface.php');
 
 interface IDirectory extends IDiskManager
 {
