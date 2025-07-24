@@ -4,6 +4,7 @@ require_once('Data/Exceptions/NotImplementedException.Class.php');
 require_once('Data/Version.Class.php');
 require_once('Data/Configuration.Class.php');
 require_once('Data/AssetManager.Class.php');
+require_once('IO/Data/Db/Database.Class.php');
 require_once('IO/Directory.Class.php');
 
 class Core
@@ -104,22 +105,84 @@ class Core
             $core -> set($core::Version, new \Utphpcore\Data\Version('Utphpcore', 1,0,0,0, 'https://github.com/Unreal-Technologies/utphpcore'));
             $core -> set($core::AssetManager, new \Utphpcore\Data\AssetManager($core));
             $core -> set($core::Configuration, new \Utphpcore\Data\Configuration($core));
-            
-            $db1 = \Utphpcore\IO\Data\Db\Database::createInstance('Core', '127.0.0.1', 'root', '', 'php2core');
-            $db1 -> query('select * from `route`');
-            $res = $db1 -> execute();
-            
-            $db2 = \Utphpcore\IO\Data\Db\Database::getInstance('Core');
-            
-            \Utphpcore\Debugging::dump(
-                $core, 
-                $res,
-                \Utphpcore\Data\Cache::all(\Utphpcore\Data\CacheTypes::Memory),
-                \Utphpcore\Data\Cache::all(\Utphpcore\Data\CacheTypes::Session),
-                $db1,
-                $db2
-            );
+            $core -> initializeDbs();
         }));
+    }
+    
+    private function initializeDbs(): void
+    {
+        $configuration = $this -> get($this::Configuration);
+        $assetManager = $this -> get($this::AssetManager);
+        $cases = ['Core', 'App'];
+        
+        $refresh = false;
+        foreach($cases as $case)
+        {
+            $info = $configuration -> get($case.'/Database');
+            $enabled = $info['Enabled'] === '1';
+            
+            if($enabled)
+            {
+                $instance = \Utphpcore\IO\Data\Db\Database::createInstance($case, $info['Host'], $info['Username'], $info['Password'], $info['Database']);
+                $instance -> query('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = \''.$info['Database'].'\'');
+                try
+                {
+                    $instance -> execute();
+                } 
+                catch (\PDOException $pex) 
+                {
+                    if($pex -> getCode() === 1049)
+                    {
+                        $dir = $assetManager -> get('Database', Data\AssetTypes::fromString($case));
+                        foreach($dir -> list() as $entry)
+                        {
+                            if($entry instanceof \Utphpcore\IO\File)
+                            {
+                                $ext = strtolower($entry -> extension());
+                                switch($ext)
+                                {
+                                    case "sql":
+                                        $instance -> structure($entry -> read(), \Utphpcore\Data\CacheTypes::Memory, true);
+                                        $refresh = true;
+                                        break;
+                                    case "php":
+                                        include($entry -> path());
+                                        $refresh = true;
+                                        break;
+                                    default:
+                                        throw new \Utphpcore\Data\Exceptions\NotImplementedException('Unknown Database Type "'.$ext.'".');
+                                }
+                            }
+                        }
+                    }
+                    if($refresh)
+                    {
+                        continue;
+                    }
+                    throw $pex;
+                }
+            }
+        }
+        
+        if($refresh)
+        {
+            $this -> redirect();
+        }
+    }
+    
+    /**
+     * @param string|null $url
+     * @return void
+     */
+    public function redirect(?string $url = null): void
+    {
+        if($url === null)
+        {
+            $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+        }
+        
+        header('Location: '.$url);
+        exit;
     }
     
     /**

@@ -31,9 +31,9 @@ class AssetManager
     /**
      * @param string $asset
      * @param AssetTypes $from
-     * @return \Utphpcore\IO\IFile|null
+     * @return \Utphpcore\IO\IDiskManager|null
      */
-    public function get(string $asset, AssetTypes $from = AssetTypes::All): ?\Utphpcore\IO\IFile
+    public function get(string $asset, AssetTypes $from = AssetTypes::All): ?\Utphpcore\IO\IDiskManager
     {
         if($from !== AssetTypes::All)
         {
@@ -59,18 +59,29 @@ class AssetManager
     /**
      * @param string $asset
      * @param \Utphpcore\IO\IDirectory $directory
-     * @return \Utphpcore\IO\IFile|null
+     * @return \Utphpcore\IO\IDiskManager|null
      */
-    private function getFromDirectory(string $asset, \Utphpcore\IO\IDirectory $directory): ?\Utphpcore\IO\IFile
+    private function getFromDirectory(string $asset, \Utphpcore\IO\IDirectory $directory): ?\Utphpcore\IO\IDiskManager
     {
         if(!$directory -> exists())
         {
             return null;
         }
-        $file = \Utphpcore\IO\File::fromDirectory($directory, $asset);
-        if($file -> exists())
+        try
         {
-            return $file;
+            $file = \Utphpcore\IO\File::fromDirectory($directory, $asset);
+            if($file -> exists())
+            {
+                return $file;
+            }
+        }
+        catch(\Exception)
+        {
+            $dir = \Utphpcore\IO\Directory::fromDirectory($directory, $asset);
+            if($dir -> exists())
+            {
+                return $dir;
+            }
         }
         return null;
     }
