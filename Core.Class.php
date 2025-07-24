@@ -113,17 +113,18 @@ class Core
     {
         $configuration = $this -> get($this::Configuration);
         $assetManager = $this -> get($this::AssetManager);
-        $cases = ['Core', 'App'];
+        $cases = [Data\AssetTypes::Core, Data\AssetTypes::App];
         
         $refresh = false;
         foreach($cases as $case)
         {
-            $info = $configuration -> get($case.'/Database');
+            $text = $case -> name;
+            $info = $configuration -> get($text.'/Database');
             $enabled = $info['Enabled'] === '1';
             
             if($enabled)
             {
-                $instance = \Utphpcore\IO\Data\Db\Database::createInstance($case, $info['Host'], $info['Username'], $info['Password'], $info['Database']);
+                $instance = \Utphpcore\IO\Data\Db\Database::createInstance($text, $info['Host'], $info['Username'], $info['Password'], $info['Database']);
                 $instance -> query('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = \''.$info['Database'].'\'');
                 try
                 {
@@ -133,7 +134,7 @@ class Core
                 {
                     if($pex -> getCode() === 1049)
                     {
-                        $dir = $assetManager -> get('Database', Data\AssetTypes::fromString($case));
+                        $dir = $assetManager -> get('Database', $case);
                         foreach($dir -> list() as $entry)
                         {
                             if($entry instanceof \Utphpcore\IO\File)
