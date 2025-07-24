@@ -105,7 +105,20 @@ class Core
             $core -> set($core::AssetManager, new \Utphpcore\Data\AssetManager($core));
             $core -> set($core::Configuration, new \Utphpcore\Data\Configuration($core));
             
-            \Utphpcore\Debugging::dump($core);
+            $db1 = \Utphpcore\IO\Data\Db\Database::createInstance('Core', '127.0.0.1', 'root', '', 'php2core');
+            $db1 -> query('select * from `route`');
+            $res = $db1 -> execute();
+            
+            $db2 = \Utphpcore\IO\Data\Db\Database::getInstance('Core');
+            
+            \Utphpcore\Debugging::dump(
+                $core, 
+                $res,
+                \Utphpcore\Data\Cache::all(\Utphpcore\Data\CacheTypes::Memory),
+                \Utphpcore\Data\Cache::all(\Utphpcore\Data\CacheTypes::Session),
+                $db1,
+                $db2
+            );
         }));
     }
     

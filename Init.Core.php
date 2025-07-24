@@ -6,7 +6,12 @@ require_once('GUI/NoHtml/Xhtml.Class.php');
 spl_autoload_register(function(string $className)
 {
     $backtrace = debug_backtrace()[0];
-    echo 'Autoloading object "'.$className.'" in "'.$backtrace['file'].':'.$backtrace['line'].'"<br />';
+    if(!isset($backtrace['file']))
+    {
+        $backtrace = debug_backtrace()[1];
+    }
+    
+    echo 'Autoloading object "'.$className.'" used in "'.$backtrace['file'].':'.$backtrace['line'].'"<br />';
     
     $list = glob(__DIR__.'/../'.str_replace('\\', '/', $className.'.*.php'));
     if(count($list) === 0)
