@@ -16,33 +16,33 @@ class Configuration
      */
     function __construct(\Utphpcore\Core $core)
     {
-        $assetManager = $core -> get($core::AssetManager);
+        $assetManager = $core -> get($core::AssetManager); /* @var $assetManager AssetManager */
         
-        $configCore = $assetManager -> get('Config.Core.ini', AssetTypes::Cache);
-        $configApp = $assetManager -> get('Config.App.ini', AssetTypes::Cache);
-        
+        $configCore = $assetManager -> get('Config.Core.ini', AssetTypes::Cache) ?-> asIni(); /* @var $configCore \Utphpcore\IO\Common\Ini|null */
+        $configApp = $assetManager -> get('Config.App.ini', AssetTypes::Cache) ?-> asIni(); /* @var $configApp \Utphpcore\IO\Common\Ini|null */
+
         if($configCore === null) //Get New Core Config file if needed
         {
-            $defaultConfigCore = $assetManager -> get('Config.Core.Default.ini', AssetTypes::Core);
+            $defaultConfigCore = $assetManager -> get('Config.Core.Default.ini', AssetTypes::Core) -> AsIni(); /* @var $defaultConfigCore \Utphpcore\IO\Common\Ini */
             if(!$assetManager -> copyTo($defaultConfigCore, 'Config.Core.ini', AssetTypes::Cache))
             {
                 throw new \Utphpcore\Data\Exceptions\IOException('Could not copy "'.$defaultConfigCore -> path().'" to Cache');
             }
-            $configCore = $assetManager -> get('Config.Core.ini', AssetTypes::Cache);
+            $configCore = $assetManager -> get('Config.Core.ini', AssetTypes::Cache) ?-> asIni(); /* @var $configCore \Utphpcore\IO\Common\Ini|null */
         }
         
         if($configApp === null) //Get New App Config file if needed
         {
-            $defaultConfigApp = $assetManager -> get('Config.App.Default.ini', AssetTypes::Core);
+            $defaultConfigApp = $assetManager -> get('Config.App.Default.ini', AssetTypes::Core) -> AsIni(); /* @var $defaultConfigApp \Utphpcore\IO\Common\Ini */
             if(!$assetManager -> copyTo($defaultConfigApp, 'Config.App.ini', AssetTypes::Cache))
             {
                 throw new \Utphpcore\Data\Exceptions\IOException('Could not copy "'.$defaultConfigCore -> path().'" to Cache');
             }
-            $configApp = $assetManager -> get('Config.App.ini', AssetTypes::Cache);
+            $configApp = $assetManager -> get('Config.App.ini', AssetTypes::Cache) ?-> asIni(); /* @var $configApp \Utphpcore\IO\Common\Ini|null */
         }
         
-        $this -> aData['Core'] = parse_ini_file($configCore -> path(), true);
-        $this -> aData['App'] = parse_ini_file($configApp -> path(), true);
+        $this -> aData['Core'] = $configCore ?-> parse();
+        $this -> aData['App'] = $configApp ?-> parse();
     }
     
     /**

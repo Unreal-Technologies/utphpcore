@@ -82,6 +82,19 @@ class File implements IFile
         }
         return new Common\Xml($this -> sPath);
     }
+    
+    /**
+     * @return Common\IIniFile|null
+     */
+    #[\Override]
+    public function asIni(): ?Common\IIniFile
+    {
+        //Is current a INI file
+        if ($this -> extension() !== 'ini') {
+            return null;
+        }
+        return new Common\Ini($this -> sPath);
+    }
 
     /**
      * @return Common\IDtdFile|null
