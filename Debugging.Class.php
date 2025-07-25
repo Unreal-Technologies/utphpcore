@@ -28,7 +28,7 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
+            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
             {
                 $trace = self::getTrace($body);
 
@@ -59,20 +59,20 @@ class Debugging
     }
     
     /**
-     * @param \Php2Core\GUI\NoHtml\Xhtml $body
-     * @return \Php2Core\GUI\NoHtml\Xhtml|null
+     * @param GUI\NoHtml\Xhtml $body
+     * @return GUI\NoHtml\Xhtml|null
      */
-    private static function getTrace(\Utphpcore\GUI\NoHtml\Xhtml $body): ?\Utphpcore\GUI\NoHtml\Xhtml
+    private static function getTrace(GUI\NoHtml\Xhtml $body): ?GUI\NoHtml\Xhtml
     {
         $trace = null;
-        $body -> get('table@#trace', function(\Utphpcore\GUI\NoHtml\Xhtml $table) use(&$trace)
+        $body -> get('table@#trace', function(GUI\NoHtml\Xhtml $table) use(&$trace)
         {
             $trace = $table;
         });
         if($trace === null)
         {
             self::trace();
-            $body -> get('table@#trace', function(\Utphpcore\GUI\NoHtml\Xhtml $table) use(&$trace)
+            $body -> get('table@#trace', function(GUI\NoHtml\Xhtml $table) use(&$trace)
             {
                 $trace = $table;
             });
@@ -91,7 +91,7 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use(&$hasBody, $ex)
+            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $ex)
             {
                 self::$dumpAsHtml = true;
                 $res = self::dump($ex);
@@ -164,7 +164,7 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use($pathReversed)
+            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body) use($pathReversed)
             {
                 $table = $body -> add('table@#trace');
                 $table -> add('tr/th@colspan=3') -> text('Trace');
@@ -193,7 +193,7 @@ class Debugging
     public static function dump(mixed ...$arguments): ?string
     {
         $self = debug_backtrace()[0];
-        $file = \Utphpcore\IO\File::fromString($self['file']);
+        $file = IO\File::fromString($self['file']);
         $tokens = self::dumpGetTokens($file, $self['line']);
 
         if(self::$dumpAsHtml)
@@ -234,7 +234,7 @@ class Debugging
      * @param int $line
      * @return array
      */
-    private static function dumpGetTokens(\Utphpcore\IO\File $file, int $line): array
+    private static function dumpGetTokens(IO\File $file, int $line): array
     {
         $tokens = token_get_all($file -> read());
         
@@ -244,7 +244,7 @@ class Debugging
         $lineTokenParameters = [];
         foreach($tokens as $token)
         {
-            if(!$match && $token[0] === \Utphpcore\Source\Analyzers\PhpAnalyzer\Tokens::T_STRING && strtolower($token[1]) === 'dump' && $token[2] === $line)
+            if(!$match && $token[0] === Source\Analyzers\PhpAnalyzer\Tokens::T_STRING && strtolower($token[1]) === 'dump' && $token[2] === $line)
             {
                 $match = true;
             }
@@ -287,7 +287,7 @@ class Debugging
             $type = is_array($token) && isset($token[0]) ? $token[0] : null;
             $inSubcomponent = $ltdepth > 0;
             
-            if($type === \Utphpcore\Source\Analyzers\PhpAnalyzer\Tokens::T_WHITESPACE && !$inSubcomponent)
+            if($type === Source\Analyzers\PhpAnalyzer\Tokens::T_WHITESPACE && !$inSubcomponent)
             {
                 continue;
             }

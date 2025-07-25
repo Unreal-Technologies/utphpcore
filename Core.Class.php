@@ -47,7 +47,7 @@ class Core
             return $basePath.$new;
         }
 
-        throw new Utphpcore\Exceptions\NotImplementedException($path);
+        throw new Data\Exceptions\NotImplementedException($path);
     }
     
     /**
@@ -81,16 +81,16 @@ class Core
         
         define('UTPHPCORE', new Core(function(Core $core)
         {
-            $root = \Utphpcore\IO\Directory::fromString(__DIR__.'/../');
+            $root = IO\Directory::fromString(__DIR__.'/../');
             
-            $temp = \Utphpcore\IO\Directory::fromDirectory($root, '/__TEMP__');
+            $temp = IO\Directory::fromDirectory($root, '/__TEMP__');
             if($temp -> exists())
             {
                 $temp -> remove();
             }
             $temp -> create();
             
-            $cache = \Utphpcore\IO\Directory::fromDirectory($root, '__CACHE__');
+            $cache = IO\Directory::fromDirectory($root, '__CACHE__');
             if(!$cache -> exists())
             {
                 $cache -> create();
@@ -99,22 +99,27 @@ class Core
             $core -> set($core::Root, $root);
             $core -> set($core::Temp, $temp);
             $core -> set($core::Cache, $cache);
-            $core -> set($core::CoreAssets, \Utphpcore\IO\Directory::fromString($root -> path().'/Utphpcore/Assets'));
-            $core -> set($core::AppAssets, \Utphpcore\IO\Directory::fromString($root -> path().'/Assets'));
+            $core -> set($core::CoreAssets, IO\Directory::fromString($root -> path().'/Utphpcore/Assets'));
+            $core -> set($core::AppAssets, IO\Directory::fromString($root -> path().'/Assets'));
             $core -> set($core::Start, microtime(true));
-            $core -> set($core::Version, new \Utphpcore\Data\Version('Utphpcore', 1,0,0,0, 'https://github.com/Unreal-Technologies/utphpcore'));
-            $core -> set($core::AssetManager, new \Utphpcore\Data\AssetManager($core));
-            $core -> set($core::Configuration, new \Utphpcore\Data\Configuration($core));
+            $core -> set($core::Version, new Data\Version('Utphpcore', 1,0,0,0, 'https://github.com/Unreal-Technologies/utphpcore'));
+            $core -> set($core::AssetManager, new Data\AssetManager($core));
+            $core -> set($core::Configuration, new Data\Configuration($core));
             $core -> initializeDbs();
         }));
     }
     
+    /**
+     * @return void
+     * @throws \Utphpcore\Data\Exceptions\NotImplementedException
+     * @throws \PDOException
+     */
     private function initializeDbs(): void
     {
-        $configuration = $this -> get($this::Configuration);
-        $assetManager = $this -> get($this::AssetManager);
+        $configuration = $this -> get($this::Configuration); /* @var $configuration Data\Configuration */
+        $assetManager = $this -> get($this::AssetManager); /* @var $assetManager Data\AssetManager */
         $cases = [Data\AssetTypes::Core, Data\AssetTypes::App];
-        
+
         $refresh = false;
         foreach($cases as $case)
         {
@@ -124,7 +129,7 @@ class Core
             
             if($enabled)
             {
-                $instance = \Utphpcore\IO\Data\Db\Database::createInstance($text, $info['Host'], $info['Username'], $info['Password'], $info['Database']);
+                $instance = IO\Data\Db\Database::createInstance($text, $info['Host'], $info['Username'], $info['Password'], $info['Database']);
                 $instance -> query('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = \''.$info['Database'].'\'');
                 try
                 {
@@ -137,13 +142,13 @@ class Core
                         $dir = $assetManager -> get('Database', $case);
                         foreach($dir -> list() as $entry)
                         {
-                            if($entry instanceof \Utphpcore\IO\File)
+                            if($entry instanceof IO\File)
                             {
                                 $ext = strtolower($entry -> extension());
                                 switch($ext)
                                 {
                                     case "sql":
-                                        $instance -> structure($entry -> read(), \Utphpcore\Data\CacheTypes::Memory, true);
+                                        $instance -> structure($entry -> read(), Data\CacheTypes::Memory, true);
                                         $refresh = true;
                                         break;
                                     case "php":
@@ -151,7 +156,7 @@ class Core
                                         $refresh = true;
                                         break;
                                     default:
-                                        throw new \Utphpcore\Data\Exceptions\NotImplementedException('Unknown Database Type "'.$ext.'".');
+                                        throw new Data\Exceptions\NotImplementedException('Unknown Database Type "'.$ext.'".');
                                 }
                             }
                         }
@@ -193,38 +198,38 @@ class Core
     {
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(\UTphpcore\GUI\NoHtml\Xhtml $body)
+            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body)
             {
                 $dif = microtime(true) - UTPHPCORE -> get(self::Start);
 
                 $body -> add('div@#execution-time') -> text('Process time: '.number_format(round($dif * 1000, 4), 4, ',', '.').' ms');
-                $body -> add('div@#version', function(\UTphpcore\GUI\NoHtml\Xhtml $div)
+                $body -> add('div@#version', function(GUI\NoHtml\Xhtml $div)
                 {
                     UTPHPCORE -> get(self::Version) -> Render($div);
                 });
             });
-            XHTML -> get('head', function(\UTphpcore\GUI\NoHtml\Xhtml $head)
+            XHTML -> get('head', function(GUI\NoHtml\Xhtml $head)
             {
                 $children = $head -> children();
                 $head -> clear();
 
-                $head -> add('link', function(\UTphpcore\GUI\NoHtml\Xhtml $link)
+                $head -> add('link', function(GUI\NoHtml\Xhtml $link)
                 {
                     $link -> attributes() -> set('rel', 'icon');
                     $link -> attributes() -> set('type', 'image/x-icon');
                     $link -> attributes() -> set('href', UTPHPCORE -> physicalToRelativePath(__DIR__.'/Assets/Images/favicon.ico'));
                 }, true);
-                $head -> add('link', function(\UTphpcore\GUI\NoHtml\Xhtml $link)
+                $head -> add('link', function(GUI\NoHtml\Xhtml $link)
                 {
                     $link -> attributes() -> set('rel', 'stylesheet');
                     $link -> attributes() -> set('href', 'https://fonts.googleapis.com/icon?family=Material+Icons');
                 }, true);
 
-                foreach(\UTphpcore\IO\Directory::fromString(__DIR__.'/Assets/Css') -> list('/\.css$/i') as $entry)
+                foreach(IO\Directory::fromString(__DIR__.'/Assets/Css') -> list('/\.css$/i') as $entry)
                 {
-                    if($entry instanceof \UTphpcore\IO\File)
+                    if($entry instanceof IO\File)
                     {
-                        $head -> add('link', function(\UTphpcore\GUI\NoHtml\Xhtml $link) use($entry)
+                        $head -> add('link', function(GUI\NoHtml\Xhtml $link) use($entry)
                         {
                             $link -> attributes() -> set('rel', 'stylesheet');
                             $link -> attributes() -> set('href', UTPHPCORE -> physicalToRelativePath($entry -> path()));
@@ -232,11 +237,11 @@ class Core
                     }
                 }
 
-                foreach(\UTphpcore\IO\Directory::fromString(__DIR__.'/Assets/Js') -> list('/\.js/i') as $entry)
+                foreach(IO\Directory::fromString(__DIR__.'/Assets/Js') -> list('/\.js/i') as $entry)
                 {
-                    if($entry instanceof \Php2Core\IO\File)
+                    if($entry instanceof IO\File)
                     {
-                        $head -> add('script', function(\UTphpcore\GUI\NoHtml\Xhtml $script) use($entry)
+                        $head -> add('script', function(GUI\NoHtml\Xhtml $script) use($entry)
                         {
                             $script -> attributes() -> set('type', 'text/javascript');
                             $script -> attributes() -> set('src', UTPHPCORE -> physicalToRelativePath($entry -> path()));
@@ -253,7 +258,7 @@ class Core
             $ob = ob_get_clean();
             if(strlen($ob) !== 0) //Attach output buffer to Xhtml, and clear
             {
-                XHTML -> get('body', function(\UTphpcore\GUI\NoHtml\Xhtml $body) use($ob)
+                XHTML -> get('body', function(GUI\NoHtml\Xhtml $body) use($ob)
                 {
                     $text = $ob.((string)$body);
                     $body -> clear();
