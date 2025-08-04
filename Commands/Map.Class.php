@@ -41,6 +41,10 @@ class Map
                 {
                     $objects[$objName][] = $enum -> extends();
                 }
+                foreach($enum -> uses() as $use)
+                {
+                    $objects[$objName][] = $use;
+                }
             }
             foreach($analyzer -> interfaces() as $interface)
             {

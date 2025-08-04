@@ -1,6 +1,5 @@
 <?php
 namespace Utphpcore\Data;
-require_once('Collections/Enum/TInfo.Trait.php');
 
 enum AssetTypes : int
 {

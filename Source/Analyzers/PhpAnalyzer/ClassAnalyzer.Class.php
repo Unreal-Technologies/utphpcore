@@ -3,7 +3,7 @@ namespace Utphpcore\Source\Analyzers\PhpAnalyzer;
 
 class ClassAnalyzer 
 {
-    use TBasics, \Utphpcore\Data\Collections\Enum\TInfo;
+    use TBasics;
     
     /**
      * @var string|null

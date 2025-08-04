@@ -1,6 +1,5 @@
 <?php
 namespace Utphpcore\IO\Common;
-require_once(__DIR__.'/../IFile.Interface.php');
 
 interface IIniFile extends \Utphpcore\IO\IFile
 {

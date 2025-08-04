@@ -14,6 +14,11 @@ class EnumAnalyzer
      * @var string|null
      */
     private ?string $extends = null;
+    
+    /**
+     * @var string[]
+     */
+    private array $uses = [];
 
     /**
      * @param array $tokens
@@ -26,6 +31,15 @@ class EnumAnalyzer
         
         $this -> name = $header['name'];
         $this -> extends = $header['extends'];
+        $this -> uses = $body['uses'];
+    }
+    
+    /**
+     * @return string[]
+     */
+    public function uses(): array
+    {
+        return $this -> uses;
     }
 
     /**

@@ -8,7 +8,6 @@ else
 {
     require_once('Core.Class.php');
     require_once('Debugging.Class.php');
-    require_once('GUI/NoHtml/Xhtml.Class.php');
 }
 
 spl_autoload_register(function(string $className)
@@ -38,9 +37,3 @@ register_shutdown_function('\Utphpcore\Core::shutdown');
 $xhtml = new \Utphpcore\GUI\NoHtml\Xhtml('<!DOCTYPE html>');
 $head = $xhtml -> add('head');
 $xhtml -> add('body');
-
-$head -> add('script', function(\Utphpcore\GUI\NoHtml\Xhtml $script)
-{
-    $script -> attributes() -> set('type', 'text/javascript');
-    $script -> attributes() -> set('src', UTPHPCORE -> physicalToRelativePath(__DIR__.'/GUI/NoHhtml/Materialize/Form.js'));
-});

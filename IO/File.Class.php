@@ -1,6 +1,5 @@
 <?php
 namespace Utphpcore\IO;
-require_once('IFile.Interface.php');
 
 class File implements IFile
 {

@@ -1,6 +1,5 @@
 <?php
 namespace Utphpcore\IO\Common;
-require_once('IIniFile.Interface.php');
 
 class Ini extends \Utphpcore\IO\File implements IIniFile
 {

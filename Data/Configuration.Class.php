@@ -1,7 +1,5 @@
 <?php
 namespace Utphpcore\Data;
-require_once('AssetTypes.Enum.php');
-require_once('Exceptions/UnexpectedValueException.Class.php');
 
 class Configuration
 {

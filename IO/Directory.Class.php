@@ -1,6 +1,5 @@
 <?php
 namespace Utphpcore\IO;
-require_once('IDirectory.Interface.php');
 
 class Directory implements IDirectory
 {

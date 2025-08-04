@@ -1,8 +1,5 @@
 <?php
 namespace Utphpcore\IO\Data\Db;
-require_once(__DIR__.'/../../../Data/Raw.Class.php');
-require_once(__DIR__.'/../../../Data/Cache.Class.php');
-require_once(__DIR__.'/../../../Data/CacheTypes.Enum.php');
 
 class Database extends \Utphpcore\Data\Raw
 {
