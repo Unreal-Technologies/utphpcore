@@ -1,0 +1,88 @@
+<?php
+namespace Utphpcore\Source\Analyzers\PhpAnalyzer;
+
+class ClassAnalyzer 
+{
+    use TBasics, \Utphpcore\Data\Collections\Enum\TInfo;
+    
+    /**
+     * @var string|null
+     */
+    private ?string $name = null;
+    
+    /**
+     * @var string|null
+     */
+    private ?string $extends = null;
+    
+    /**
+     * @var string[]
+     */
+    private array $implements = [];
+
+    /**
+     * @var FunctionAnalyzer[]
+     */
+    private array $functions = [];
+    
+    /**
+     * @var string[];
+     */
+    private array $uses = [];
+    
+    /**
+     * @param array $tokens
+     * @param string $namespace
+     */
+    public function __construct(array $tokens, string $namespace)
+    {
+        $header = $this -> header($tokens, $namespace);
+        $body = $this -> body($header['body'], $namespace);
+        
+        $this -> name = $header['name'];
+        $this -> extends = $header['extends'];
+        $this -> implements = $header['implements'];
+        $this -> functions = $body['functions'];
+        $this -> uses = $body['uses'];
+    }
+    
+    /**
+     * @return string[]
+     */
+    public function uses(): array
+    {
+        return $this -> uses;
+    }
+    
+    /**
+     * @return FunctionAnalyzer[]
+     */
+    public function function(): array
+    {
+        return $this -> functions;
+    }
+    
+    /**
+     * @return string[]
+     */
+    public function implements(): array
+    {
+        return $this -> implements;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function extends(): ?string
+    {
+        return $this -> extends;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function name(): ?string
+    {
+        return $this -> name;
+    }
+}

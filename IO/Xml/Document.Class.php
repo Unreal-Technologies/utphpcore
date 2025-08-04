@@ -86,12 +86,7 @@ final class Document extends Element implements IXmlDocument
      * @return boolean
      */
     #[\Override]
-    final public function validateDtdStream(
-        string $stream,
-        string $root,
-        bool $output = true,
-        string $encoding = 'utf-8'
-    ): bool {
+    final public function validateDtdStream(string $stream, string $root, bool $output = true, string $encoding = 'utf-8'): bool {
         $file = abs(crc32(date('U') . rand(0, 0xfff))) . '.b';
         file_put_contents($file, $stream);
 
@@ -122,7 +117,7 @@ final class Document extends Element implements IXmlDocument
      * @return boolean
      */
     #[\Override]
-    final public function validateXsd(\Core\Classes\IO\IFile $xsdSchemaFile, bool $output = true): bool
+    final public function validateXsd(\Utphpcore\IO\IFile $xsdSchemaFile, bool $output = true): bool
     {
         $xml = (string)$this;
 
@@ -147,12 +142,7 @@ final class Document extends Element implements IXmlDocument
      * @return bool
      */
     #[\Override]
-    final public function validateDtd(
-        \Core\Classes\IO\Common\IDtdFile $dtdSchemaFile,
-        string $root,
-        bool $output = true,
-        string $encoding = 'utf-8'
-    ): bool {
+    final public function validateDtd(\Utphpcore\IO\Common\IDtdFile $dtdSchemaFile, string $root, bool $output = true, string $encoding = 'utf-8'): bool {
         $xml = (string)$this;
         if (!$dtdSchemaFile -> exists()) {
             return false;

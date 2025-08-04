@@ -1,7 +1,15 @@
 <?php
-require_once('Core.Class.php');
-require_once('Debugging.Class.php');
-require_once('GUI/NoHtml/Xhtml.Class.php');
+$root = realpath(__DIR__.'/../');
+if(file_exists($root.'/class.map'))
+{
+    require_once($root.'/class.map');
+}
+else
+{
+    require_once('Core.Class.php');
+    require_once('Debugging.Class.php');
+    require_once('GUI/NoHtml/Xhtml.Class.php');
+}
 
 spl_autoload_register(function(string $className)
 {

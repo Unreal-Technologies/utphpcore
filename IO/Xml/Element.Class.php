@@ -350,9 +350,7 @@ class Element implements IXmlElement
      * @param IXmlDoctype $doctype
      * @return Document
      */
-    final public function asDocument(
-        IXmlDoctype $doctype = null
-    ): Document {
+    final public function asDocument(IXmlDoctype $doctype = null): Document {
         if ($doctype === null) {
             $doctype = Doctype::xml();
         }
@@ -378,13 +376,7 @@ class Element implements IXmlElement
      * @return array|Element|null
      */
     #[\Override]
-    final public function search(
-        string $regex,
-        int $returnIndex = null,
-        string $type = self::SEARCH_NAME,
-        $recursive = true,
-        $recursivePos = 0
-    ): ?array {
+    final public function search(string $regex, int $returnIndex = null, string $type = self::SEARCH_NAME, $recursive = true, $recursivePos = 0): ?array {
         $list = array();
         $value = null;
         switch ($type) {

@@ -20,4 +20,5 @@ interface IFile extends IDiskManager
     public function fClose(): bool;
     public function fRead(int $length): ?string;
     public function fOpen(string $mode, bool $useIncludePath = false, $context = null): bool;
+    public function fWrite(string $content): mixed;
 }

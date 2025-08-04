@@ -45,6 +45,41 @@ class Linq implements ILinq
         $this -> aInCollection = $collection;
     }
 
+    /** 
+     * @param array $needle
+     * @return int|null
+     */
+    #[\Override]
+    public function search(array $needle): ?int
+    {
+        $haystack = $this -> aInCollection;
+        $haystackCount = count($haystack);
+        $needleCount = count($needle);
+        
+        if($needleCount > $haystackCount)
+        {
+            throw new \UI\Exception\InvalidArgumentException();
+        }
+        
+        for ($i = 0; $i <= $haystackCount - $needleCount; $i++) 
+        {
+            $matchCount = 0;
+            for ($j = 0; $j < $needleCount; $j++) 
+            {
+                if ($needle[$j] == $haystack[$i + $j]) 
+                {
+                    $matchCount++;
+                    if ($matchCount == $needleCount) 
+                    {
+                        return $i;
+                    }
+                }
+            }
+          }
+          
+          return null;
+    }
+    
     /**
      * @param int $count
      * @return ILinq

@@ -13,8 +13,6 @@ interface ILinq
     public function sum(\Closure $lambda = null): ILinq;
     public function avg(\Closure $lambda = null): ILinq;
     public function skip(int $count): ILinq;
-    public function orderBy(
-        \Closure $lambda = null,
-        SortDirections $direction = SortDirections::Asc
-    ): ILinq;
+    public function orderBy(\Closure $lambda = null, SortDirections $direction = SortDirections::Asc): ILinq;
+    public function search(array $needle): ?int;
 }

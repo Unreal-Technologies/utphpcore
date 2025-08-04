@@ -58,11 +58,32 @@ class Tokens
     public const T_INCLUDE = 272;
     public const T_CLONE = 285;
     public const T_IMPLEMENTS = 338;
+    public const T_ECHO = 291;
+    public const T_PRIVATE = 324;
+    public const T_METHOD_C = 348;
+    public const T_FOR = 295;
+    public const T_INC = 375;
+    public const T_ELLIPSIS = 399;
+    public const T_DEC = 376;
+    public const T_CONCAT_EQUAL = 356;
+    public const T_IS_SMALLER_OR_EQUAL = 370;
+    public const T_PROTECTED = 325;
+    public const T_WHILE = 293;
+    public const T_PLUS_EQUAL = 352;
+    public const T_TRY = 314;
+    public const T_CATCH = 315;
+    public const T_SWITCH = 302;
+    public const T_DEFAULT = 305;
+    public const T_IS_NOT_EQUAL = 367;
+    public const T_STRING_CAST = 379;
+    public const T_IS_EQUAL = 366;
+    public const T_CLASS_C = 346;
+    public const T_NULLSAFE_OBJECT_OPERATOR = 385;
     
     /**
      * @param int $value
-     * @return string
-     * @throws \Php2Core\Data\Exceptions\NotImplementedException
+     * @return string|null
+     * @throws \Utphpcore\Data\Exceptions\NotImplementedException
      */
     public static function getToken(int $value): ?string
     {
@@ -76,6 +97,6 @@ class Tokens
             }
         }
         
-        throw new \Php2Core\Data\Exceptions\NotImplementedException('Undefined value: '.$value.' ('.token_name($value).'?)');
+        throw new \Utphpcore\Data\Exceptions\NotImplementedException('Undefined value: '.$value.' ('.token_name($value).'?)');
     }
 }

@@ -1,11 +1,5 @@
 <?php
 namespace Utphpcore;
-require_once('Data/Exceptions/NotImplementedException.Class.php');
-require_once('Data/Version.Class.php');
-require_once('Data/Configuration.Class.php');
-require_once('Data/AssetManager.Class.php');
-require_once('IO/Data/Db/Database.Class.php');
-require_once('IO/Directory.Class.php');
 
 class Core
 {
@@ -38,7 +32,7 @@ class Core
      */
     public function physicalToRelativePath(string $path): string
     {
-        $basePath = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].pathinfo($_SERVER['SCRIPT_NAME'])['dirname'];
+        $basePath = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].''.pathinfo($_SERVER['SCRIPT_NAME'])['dirname'].'/';
         $root = $this -> get(self::Root) -> path();
         
         $new = str_replace([$root.'\\', $root.'/', '\\', '//', ':/'], ['', '', '/', '/', '://'], $path);
@@ -106,7 +100,26 @@ class Core
             $core -> set($core::AssetManager, new Data\AssetManager($core));
             $core -> set($core::Configuration, new Data\Configuration($core));
             $core -> initializeDbs();
+            $core -> initializeAdminCommands();
         }));
+    }
+    
+    /**
+     * @return void
+     */
+    private function initializeAdminCommands(): void
+    {
+        if(isset($_GET['cmd']))
+        {
+            switch($_GET['cmd'])
+            {
+                case 'map':
+                    new Commands\Map($this -> get($this::Root));
+                    exit;
+                default:
+                    break;
+            }
+        }
     }
     
     /**

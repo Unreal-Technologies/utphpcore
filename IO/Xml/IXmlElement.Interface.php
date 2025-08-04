@@ -22,13 +22,7 @@ interface IXmlElement
     public function name(): string;
     public function createChild(string $name): ?IXmlElement;
     public function addChild(IXmlElement $element): bool;
-    public function search(
-        string $regex,
-        int $returnIndex = null,
-        string $type = self::SEARCH_NAME,
-        $recursive = true,
-        $recursivePos = 0
-    ): ?array;
+    public function search(string $regex, int $returnIndex = null, string $type = self::SEARCH_NAME, $recursive = true, $recursivePos = 0): ?array;
     public function updatePosition(int $pos): void;
     public function asArray(): array;
 }

@@ -257,6 +257,19 @@ class File implements IFile
     }
     
     /**
+     * @param string $content
+     * @return mixed
+     */
+    public function fWrite(string $content): mixed
+    {
+        if($this -> oHandler === null)
+        {
+            return null;
+        }
+        return fwrite($this -> oHandler, $content);
+    }
+    
+    /**
      * @param int $length
      * @return string|null
      */
