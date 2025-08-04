@@ -212,6 +212,23 @@ class Readme
                     $buffer[] = $type.': ['.$trait -> extends().'](#'.str_replace('\\', '', strtolower($trait.'-'.$class -> extends())).')'."\r\n";
                     $buffer[] = "\r\n";
                 }
+
+                $buffer[] = '### Functions'."\r\n";
+                $functions = (new \Utphpcore\Data\Collections\Linq($trait -> functions())) -> where(function(\Utphpcore\Source\Analyzers\PhpAnalyzer\FunctionAnalyzer $fa)
+                {
+                    return !$fa -> isPrivate();
+                }) -> orderBy(function(\Utphpcore\Source\Analyzers\PhpAnalyzer\FunctionAnalyzer $fa)
+                {
+                    return $fa -> raw();
+                }) -> toArray();
+
+                foreach($functions as $function)
+                {
+                    $buffer[] = '```'."\r\n";
+                    $buffer[] = $function -> raw()."\r\n";
+                    $buffer[] = '```'."\r\n";
+                }
+                
                 $stream[$fqn] = implode('', $buffer);
             }
             

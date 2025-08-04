@@ -21,6 +21,11 @@ class TraitAnalyzer
     private ?string $namespace = null;
     
     /**
+     * @var FunctionAnalyzer[]
+     */
+    private array $functions = [];
+    
+    /**
      * @param array $tokens
      * @param string $namespace
      */
@@ -31,7 +36,16 @@ class TraitAnalyzer
         
         $this -> name = $header['name'];
         $this -> extends = $header['extends'];
+        $this -> functions = $body['functions'];
         $this -> namespace = $namespace;
+    }
+    
+    /**
+     * @return FunctionAnalyzer[]
+     */
+    public function functions(): array
+    {
+        return $this -> functions;
     }
     
     /**
