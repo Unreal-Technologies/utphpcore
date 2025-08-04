@@ -100,9 +100,18 @@ class Map
         if($mapFile -> fOpen('w+'))
         {
             $mapFile -> fWrite('<?php'."\r\n");
-            foreach(array_keys($ordered) as $k)
+            foreach($ordered as $k => $v)
             {
-                $mapFile -> fWrite('require_once(\''.$k.'\');'."\r\n");
+                $mapFile -> fWrite('require_once(\''.$k.'\');');
+                if(count($v['requires']) !== 0)
+                {
+                    $mapFile -> fwrite(' /* requires: ');
+                    $mapFile -> fwrite(implode(' & ', $v['requires']));
+                    $mapFile -> fwrite(' */');
+                    
+                    \Utphpcore\Debugging::dump($v);
+                }
+                $mapFile -> fwrite("\r\n");
             }
             $mapFile -> fWrite('?>'."\r\n");
             
