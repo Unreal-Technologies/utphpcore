@@ -3,6 +3,9 @@ namespace Utphpcore\Commands;
 
 class Map 
 {
+    /**
+     * @param \Utphpcore\IO\Directory $directory
+     */
     function __construct(\Utphpcore\IO\Directory $directory)
     {
         $fileData = [];
@@ -108,17 +111,14 @@ class Map
                     $mapFile -> fwrite(' /* requires: ');
                     $mapFile -> fwrite(implode(' & ', $v['requires']));
                     $mapFile -> fwrite(' */');
-                    
-                    \Utphpcore\Debugging::dump($v);
                 }
                 $mapFile -> fwrite("\r\n");
             }
             $mapFile -> fWrite('?>'."\r\n");
-            
             $mapFile -> fClose();
         }
         
-        \Utphpcore\Debugging::dump('REDIRECT!');
+        echo '<h1>Classmap done</h1>';
     }
     
     /**

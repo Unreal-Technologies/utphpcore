@@ -31,6 +31,11 @@ class ClassAnalyzer
     private array $uses = [];
     
     /**
+     * @var string|null
+     */
+    private ?string $namespace = null;
+    
+    /**
      * @param array $tokens
      * @param string $namespace
      */
@@ -44,6 +49,15 @@ class ClassAnalyzer
         $this -> implements = $header['implements'];
         $this -> functions = $body['functions'];
         $this -> uses = $body['uses'];
+        $this -> namespace = $namespace;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function namespace(): ?string
+    {
+        return $this -> namespace;
     }
     
     /**
@@ -57,7 +71,7 @@ class ClassAnalyzer
     /**
      * @return FunctionAnalyzer[]
      */
-    public function function(): array
+    public function functions(): array
     {
         return $this -> functions;
     }

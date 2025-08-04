@@ -16,6 +16,11 @@ class TraitAnalyzer
     private ?string $extends = null;
     
     /**
+     * @var string|null
+     */
+    private ?string $namespace = null;
+    
+    /**
      * @param array $tokens
      * @param string $namespace
      */
@@ -26,6 +31,15 @@ class TraitAnalyzer
         
         $this -> name = $header['name'];
         $this -> extends = $header['extends'];
+        $this -> namespace = $namespace;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function namespace(): ?string
+    {
+        return $this -> namespace;
     }
     
     /**

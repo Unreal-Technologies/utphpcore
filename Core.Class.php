@@ -115,7 +115,10 @@ class Core
             {
                 case 'map':
                     new Commands\Map($this -> get($this::Root));
-                    exit;
+                    break;
+                case 'readme':
+                    new Commands\Readme($this -> get($this::Root));
+                    break;
                 default:
                     break;
             }

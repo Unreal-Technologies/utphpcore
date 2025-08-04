@@ -10,6 +10,16 @@ class FunctionAnalyzer
      */
     private ?string $name = null;
 
+    /**
+     * @var string|null
+     */
+    private ?string $raw = null;
+    
+    /**
+     * @var bool
+     */
+    private bool $isPrivate = false;
+    
     /** 
      * @param array $tokens
      * @param string $namespace
@@ -20,6 +30,24 @@ class FunctionAnalyzer
         $body = $this -> body($header['body'], $namespace);
         
         $this -> name = $header['name'];
+        $this -> raw = $header['raw'];
+        $this -> isPrivate = $header['isPrivate'];
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isPrivate(): bool
+    {
+        return $this -> isPrivate;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function raw(): ?string
+    {
+        return $this -> raw;
     }
     
     /**

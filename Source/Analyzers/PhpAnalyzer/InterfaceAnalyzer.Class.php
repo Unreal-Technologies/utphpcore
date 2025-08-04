@@ -15,6 +15,15 @@ class InterfaceAnalyzer
      */
     private ?string $extends = null;
 
+    /**
+     * @var FunctionAnalyzer[]
+     */
+    private array $functions = [];
+    
+    /**
+     * @var string|null
+     */
+    private ?string $namespace = null;
 
     /**
      * @param array $tokens
@@ -27,6 +36,24 @@ class InterfaceAnalyzer
         
         $this -> name = $header['name'];
         $this -> extends = $header['extends'];
+        $this -> functions = $body['functions'];
+        $this -> namespace = $namespace;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function namespace(): ?string
+    {
+        return $this -> namespace;
+    }
+    
+    /**
+     * @return FunctionAnalyzer[]
+     */
+    public function functions(): array
+    {
+        return $this -> functions;
     }
     
     /**

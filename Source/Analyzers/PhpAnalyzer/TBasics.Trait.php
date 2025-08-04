@@ -129,6 +129,23 @@ trait TBasics
         return $buffer;
     }
     
+    private function rawTrimmed(array $tokens): string
+    {
+        $string = '';
+        foreach($tokens as $token)
+        {
+            if(is_array($token))
+            {
+                $string .= $token[1];
+            }
+            else
+            {
+                $string .= $token;
+            }
+        }
+        return trim($string);
+    }
+    
     /**
      * @param array $tokens
      * @param string $namespace
@@ -149,17 +166,25 @@ trait TBasics
         }
         
         $header = array_slice($tokens, $start, $end);
+        $raw = $this -> rawTrimmed($header);
+        
         $body = array_slice($tokens, $end + 1, -1);
         
         $name = null;
         $inExtends = false;
         $inImplements = false;
+        $isPrivate = false;
         
         $extends = null;
         $implements = [];
         
         foreach($header as $token)
         {
+            if(is_array($token) && $token[0] === Tokens::T_PRIVATE)
+            {
+                $isPrivate = true;
+            }
+            
             if($name === null && $token[0] === Tokens::T_STRING)
             {
                 $name = $token[1];
@@ -214,7 +239,9 @@ trait TBasics
             'name' => $name,
             'extends' => $extends,
             'implements' => $implements,
-            'body' => $body
+            'body' => $body,
+            'raw' => $raw,
+            'isPrivate' => $isPrivate
         ];
     }
 }
