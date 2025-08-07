@@ -26,7 +26,7 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
+            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
             {
                 $trace = self::getTrace($body);
 
@@ -89,7 +89,7 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $ex)
+            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $ex)
             {
                 self::$dumpAsHtml = true;
                 $res = self::dump($ex);
@@ -162,7 +162,7 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body) use($pathReversed)
+            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use($pathReversed)
             {
                 $table = $body -> add('table@#trace');
                 $table -> add('tr/th@colspan=3') -> text('Trace');
@@ -198,31 +198,78 @@ class Debugging
         {
             ob_start();
         }
-        echo '<div class="dump">';
-        echo '<h2>'.(self::$dumpTitle === null ? __METHOD__ : self::$dumpTitle).'</h2>';
-        echo '<span>'.$self['file'].':'.$self['line'].'</span><br />';
-        echo '<div>';
-        foreach($arguments as $idx => $argument)
+        if(defined('XHTML'))
         {
-            echo '<span>';
-            $doPrint = is_array($argument) || is_object($argument);
-            echo '<span>'.$tokens[$idx].'</span> = <span>';
-            if($doPrint)
+            $title = self::$dumpTitle === null ? __METHOD__ : self::$dumpTitle;
+            
+            $hasRow = false;
+            XHTML -> get('body/div@.container/div@.row', function() use(&$hasRow)
             {
-                echo '<xmp>'.print_r($argument, true).'</xmp>';
-            }
-            else
+                $hasRow = true;
+            });
+            if(!$hasRow)
             {
-                var_dumP($argument);
+                XHTML -> get('body/div@.container')[0] -> add('div@.row');
             }
-            echo '</span><br />';
-            echo '</span>';
+            
+            XHTML -> get('body/div@.container/div@.row', function(GUI\NoHtml\Xhtml $body) use($title, $self, $arguments, $tokens)
+            {
+                $body -> add('div@.dump col s6 z-depth-6', function(GUI\NoHtml\Xhtml $dump) use($title, $self, $arguments, $tokens)
+                {
+                    $dump -> add('h2') -> text($title);
+                    $dump -> add('span') -> text($self['file'].':'.$self['line']);
+                    $dump -> add('br', null, true);
+                    $dump -> add('div', function(GUI\NoHtml\Xhtml $div) use($arguments, $tokens)
+                    {
+                        foreach($arguments as $idx => $argument)
+                        {
+                            $div -> add('span', function(GUI\NoHtml\Xhtml $inner) use($argument, $tokens, $idx, &$flushed)
+                            {
+                                $doPrint = is_array($argument) || is_object($argument);
+                                $inner -> add('span') -> text($tokens[$idx].' = ');
+                                if($doPrint)
+                                {
+                                    $inner -> add('span/xmp') -> text(print_r($argument, true));
+                                }
+                                else
+                                {
+                                    $inner -> add('span') -> text('('.gettype($argument).') '.var_export($argument, true));
+                                    $inner -> add('br', null, true);
+                                }
+                            });
+                        }
+                    });
+                });
+            });
         }
-        echo '</div>';
-        echo '</div>';
-        if(self::$dumpAsHtml)
+        else
         {
-            return ob_get_clean();
+            echo '<div class="dump">';
+            echo '<h2>'.(self::$dumpTitle === null ? __METHOD__ : self::$dumpTitle).'</h2>';
+            echo '<span>'.$self['file'].':'.$self['line'].'</span><br />';
+            echo '<div>';
+            foreach($arguments as $idx => $argument)
+            {
+                echo '<span>';
+                $doPrint = is_array($argument) || is_object($argument);
+                echo '<span>'.$tokens[$idx].'</span> = <span>';
+                if($doPrint)
+                {
+                    echo '<xmp>'.print_r($argument, true).'</xmp>';
+                }
+                else
+                {
+                    var_dumP($argument);
+                }
+                echo '</span><br />';
+                echo '</span>';
+            }
+            echo '</div>';
+            echo '</div>';
+            if(self::$dumpAsHtml)
+            {
+                return ob_get_clean();
+            }
         }
         return null;
     }

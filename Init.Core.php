@@ -36,4 +36,4 @@ register_shutdown_function('\Utphpcore\Core::shutdown');
 
 $xhtml = new \Utphpcore\GUI\NoHtml\Xhtml('<!DOCTYPE html>');
 $head = $xhtml -> add('head');
-$xhtml -> add('body');
+$xhtml -> add('body/div@.container');

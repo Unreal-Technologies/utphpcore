@@ -214,7 +214,7 @@ class Core
     {
         if(defined('XHTML'))
         {
-            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body)
+            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body)
             {
                 $dif = microtime(true) - UTPHPCORE -> get(self::Start);
 

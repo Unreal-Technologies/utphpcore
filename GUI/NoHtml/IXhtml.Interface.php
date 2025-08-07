@@ -11,5 +11,5 @@ interface IXhtml
     public function append(mixed $content): void;
     public function children(): array;
     public function clear(): void;
-    public function get(string $path, \Closure $callback): void;
+    public function get(string $path, \Closure $callback = null): array;
 }

@@ -214,13 +214,16 @@ class Readme
                 }
 
                 $buffer[] = '### Functions'."\r\n";
-                $functions = (new \Utphpcore\Data\Collections\Linq($trait -> functions())) -> where(function(\Utphpcore\Source\Analyzers\PhpAnalyzer\FunctionAnalyzer $fa)
-                {
-                    return !$fa -> isPrivate();
-                }) -> orderBy(function(\Utphpcore\Source\Analyzers\PhpAnalyzer\FunctionAnalyzer $fa)
-                {
-                    return $fa -> raw();
-                }) -> toArray();
+                $functions = (new \Utphpcore\Data\Collections\Linq($trait -> functions())) 
+                    -> where(function(\Utphpcore\Source\Analyzers\PhpAnalyzer\FunctionAnalyzer $fa)
+                    {
+                        return !$fa -> isPrivate();
+                    }) 
+                    -> orderBy(function(\Utphpcore\Source\Analyzers\PhpAnalyzer\FunctionAnalyzer $fa)
+                    {
+                        return $fa -> raw();
+                    }) 
+                    -> toArray();
 
                 foreach($functions as $function)
                 {

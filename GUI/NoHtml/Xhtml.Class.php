@@ -229,13 +229,14 @@ class Xhtml implements IXhtml
         $this -> oAttributes -> Clear();
     }
     
-    /**
+    /** 
      * @param string $path
      * @param \Closure $callback
-     * @return void
+     * @return Xhtml[]
+     * @throws \Php2Core\Exceptions\NotImplementedException
      */
     #[\Override]
-    public function get(string $path, \Closure $callback): void
+    public function get(string $path, \Closure $callback = null): array
     {
         $components = explode('/', $path);
         $current = [ $this ];
@@ -302,9 +303,16 @@ class Xhtml implements IXhtml
             }
         }
         
+        $buffer = [];
         foreach($current as $cObj)
         {
-            $callback($cObj);
+            $buffer[] = $cObj;
+            if($callback !== null)
+            {
+                $callback($cObj);
+            }
         }
+        
+        return $buffer;
     }
 }
