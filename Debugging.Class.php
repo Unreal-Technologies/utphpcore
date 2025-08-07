@@ -241,6 +241,10 @@ class Debugging
                     });
                 });
             });
+            if(self::$dumpAsHtml)
+            {
+                return (string)XHTML -> get('body/div@.container/div@.row/div@.dump col s6 z-depth-6')[0];
+            }
         }
         else
         {
