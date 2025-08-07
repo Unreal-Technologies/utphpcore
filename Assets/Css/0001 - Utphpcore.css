@@ -115,6 +115,11 @@
     color: #00aa00;
 }
 
+.dump #trace
+{
+    color: gray;
+}
+
 .container, .row
 {
     min-width: 100%;

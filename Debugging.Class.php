@@ -69,7 +69,7 @@ class Debugging
         });
         if($trace === null)
         {
-            self::trace();
+            self::trace($body);
             $body -> get('table@#trace', function(GUI\NoHtml\Xhtml $table) use(&$trace)
             {
                 $trace = $table;
@@ -110,10 +110,11 @@ class Debugging
         exit;
     }
     
-    /**
-     * @return void
-     */
-    public static function trace(): void
+   /**
+    * @param GUI\NoHtml\Xhtml $container
+    * @return void
+    */
+    public static function trace(GUI\NoHtml\Xhtml $container = null): void
     {
         $path = [];
         $components = debug_backtrace();
@@ -162,9 +163,15 @@ class Debugging
         
         if(defined('XHTML'))
         {
-            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use($pathReversed)
-            {
-                $table = $body -> add('table@#trace');
+            $ownContainer = $container === null ? XHTML -> get('body/div@.container')[0] : $container;
+            
+//            echo '<xmp>';
+//            print_r($ownContainer);
+//            echo '</xmp>';
+            
+            //XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use($pathReversed)
+            //{
+                $table = $ownContainer -> add('table@#trace');
                 $table -> add('tr/th@colspan=3') -> text('Trace');
 
                 foreach($pathReversed as $idx => $data)
@@ -176,7 +183,7 @@ class Debugging
                     $tr -> add('td') -> text($line === null ? '' : $line);
                     $tr -> add('td') -> text($call);
                 }
-            });
+            //});
         }
         else
         {
@@ -238,6 +245,7 @@ class Debugging
                                 }
                             });
                         }
+                        $trace = self::getTrace($div);
                     });
                 });
             });
