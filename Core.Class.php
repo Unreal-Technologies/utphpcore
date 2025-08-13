@@ -122,21 +122,24 @@ class Core
                 return new Data\Configuration($core);
             });
             
-            Data\Cache::create(Data\CacheTypes::Session, $core::Version, function() use($core)
+            $configuration = Data\Cache::get($core::Configuration); /* @var $configuration Data\Configuration */
+            if($configuration -> get('App/Version/Enabled'))
             {
-                $configuration = Data\Cache::get($core::Configuration); /* @var $configuration Data\Configuration */
-                $aVersion = explode('.', $configuration -> get('App/Application/Version'));
-                $url = $configuration -> get('App/Application/Url');
-                if($url === '')
+                Data\Cache::create(Data\CacheTypes::Session, $core::Version, function() use($core, $configuration)
                 {
-                    $url = null;
-                }
+                    $aVersion = explode('.', $configuration -> get('App/Application/Version'));
+                    $url = $configuration -> get('App/Application/Url');
+                    if($url === '')
+                    {
+                        $url = null;
+                    }
 
-                $version = new Data\Version($configuration -> get('App/Application/Title'), $aVersion[0], $aVersion[1], $aVersion[2], $aVersion[3], $url);
-                $version -> add(new Data\Version('Utphpcore', $core -> version[0], $core -> version[1], $core -> version[2], $core -> version[3], $core -> url));
-                
-                return $version;
-            });
+                    $version = new Data\Version($configuration -> get('App/Application/Title'), $aVersion[0], $aVersion[1], $aVersion[2], $aVersion[3], $url);
+                    $version -> add(new Data\Version('Utphpcore', $core -> version[0], $core -> version[1], $core -> version[2], $core -> version[3], $core -> url));
+
+                    return $version;
+                });
+            }
 
             $core -> initializeDbs();
             $core -> initializeAdminCommands();
@@ -258,13 +261,17 @@ class Core
         {
             XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body)
             {
+                $version = Data\Cache::get(self::Version); /* @var $version = Data\Version|null */
                 $dif = microtime(true) - Data\Cache::get(self::Start);
 
                 $body -> add('div@#execution-time') -> text('Process time: '.number_format(round($dif * 1000, 4), 4, ',', '.').' ms');
-                $body -> add('div@#version', function(GUI\NoHtml\Xhtml $div)
+                if($version !== null)
                 {
-                    Data\Cache::get(self::Version) -> Render($div);
-                });
+                    $body -> add('div@#version', function(GUI\NoHtml\Xhtml $div) use($version)
+                    {
+                        $version -> Render($div);
+                    });
+                }
             });
             XHTML -> get('head', function(GUI\NoHtml\Xhtml $head)
             {
