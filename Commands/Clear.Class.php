@@ -9,7 +9,7 @@ class Clear
     {
         $_SESSION = [];
         \Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Session, \Utphpcore\Core::Message, 'Cache Cleared');
-        header('Location: '.$_SERVER['REDIRECT_URL']);
+        header('Location: '.(isset($_SERVER['REDIRECT_URL']) ? $_SERVER['REDIRECT_URL'] : '/'));
         exit;
     }
 }

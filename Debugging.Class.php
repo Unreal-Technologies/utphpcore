@@ -251,7 +251,7 @@ class Debugging
             });
             if(self::$dumpAsHtml)
             {
-                return (string)XHTML -> get('body/div@.container/div@.row/div@.dump col s6 z-depth-6')[0];
+                return (string)XHTML -> get('body/div@.container/div@.row/div@.dump col s10 offset-s1 z-depth-6')[0];
             }
         }
         else

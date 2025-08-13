@@ -5,6 +5,9 @@ class Core
 {
     public const Start         = __CLASS__.'\\'.(0x10000000);
     public const Version       = __CLASS__.'\\'.(0x10000001);
+    public const InstanceID    = __CLASS__.'\\'.(0x10000002);
+    public const DefaultRoute  = __CLASS__.'\\'.(0x10000003);
+    public const Route         = __CLASS__.'\\'.(0x10000004);
     public const Root          = __CLASS__.'\\'.(0x10000010);
     public const Temp          = __CLASS__.'\\'.(0x10000011);
     public const Cache         = __CLASS__.'\\'.(0x10000012);
@@ -143,7 +146,112 @@ class Core
 
             $core -> initializeDbs();
             $core -> initializeAdminCommands();
+            $core -> initializeRouting();
         }));
+    }
+
+    /**
+     * @return void
+     */
+    private function initializeRouting(): void
+    {
+        //Get DB Instance
+        $coreDbc = IO\Data\Db\Database::getInstance('Core'); /* @var $coreDbc IO\Data\Db\Database */
+        $instanceId = Data\Cache::get(self::InstanceID);
+        $authenticated = false;
+        $isServerAdmin = false;
+
+        Data\Cache::create(Data\CacheTypes::Session, self::DefaultRoute, function() use($coreDbc, $authenticated, $instanceId)
+        {
+            //Get Default handler
+            $coreDbc -> query(
+                'select '
+                . 'case when `match` is null then \'index\' else `match` end as `match` '
+                . 'from `route` '
+                . 'where `default` = "true" '
+                . 'and ( `instance-id` = '.$instanceId.' or `instance-id` is null ) '
+                . ($authenticated ? '' : 'and `auth` = "false" ')
+                . 'order by `id` asc '
+                . 'limit 0,1'
+            );
+
+            $defaultResults = $coreDbc -> execute();
+            $defaultRoute = $defaultResults['iRowCount'] === 0 ? 'index' : $defaultResults['aResults'][0]['match'];
+            
+            return $defaultRoute;
+        });
+        
+        Data\Cache::create(Data\CacheTypes::Memory, self::Route, function() use($coreDbc, $authenticated, $isServerAdmin, $instanceId)
+        {
+            $defaultRoute = Data\Cache::get(self::DefaultRoute);
+
+            //Get Router Information
+            $router = new Data\Router($defaultRoute);
+            $slug = $router -> slug();
+            $possibilities = $this -> getPossibleMatchesFromSlug($slug);
+
+            //Get Possible routes
+            $coreDbc -> query(
+                'select '
+                . '`method`, `match`, `target`, `type`, `auth`, `mode` '
+                . 'from `route` '
+                . 'where ( `instance-id` = '.$instanceId.' or `instance-id` is null ) '
+                . 'and (`match` regexp \''.implode('\' or `match` regexp \'', $possibilities).'\') '
+                . ($authenticated ? '' : 'and `auth` = "false" ')
+                . ($isServerAdmin ? '' : 'and `type` != \'function\' ')
+            );
+
+            //Register possible routes
+            $routeResult = $coreDbc -> execute();
+
+            foreach($routeResult['aResults'] as $row)
+            {
+                $router -> register($row['method'].'::'.$row['match'], $row['type'].'#'.$row['target'], $row['mode']);
+            }
+            
+            //get current route (if matched)
+            return $router -> match();
+        });
+        
+        
+        $route = Data\Cache::get(self::Route);
+        //throw exception when not actually matched
+        if($route === null)
+        {
+            //throw new \Exception('Route not found');
+        }
+        else if($route -> target()['type'] === 'function')
+        {
+            eval($route -> target()['target'].'();');
+            exit;
+        }
+    }
+    
+    /**
+     * @param string $slug
+     * @return array
+     */
+    private static function getPossibleMatchesFromSlug(string $slug): array
+    {
+        $parts = explode('/', $slug);
+        $buffer = [ '^'.$parts[0].'$' ];
+        $offParts = [ $parts[0] ];
+        
+        for($i=1; $i<count($parts); $i++)
+        {
+            $offParts[$i] = '{.+}';
+            
+            $temp1 = implode('\\/', array_slice($parts, 0, $i));
+            $temp2 = implode('\\/', array_slice($offParts, 0, $i));
+            
+            $buffer[] = '^'.$temp1.'\\/'.$parts[$i].'$';
+            $buffer[] = '^'.$temp2.'\\/'.$parts[$i].'$';
+            
+            $buffer[] = '^'.$temp1.'\\/{.+}$';
+            $buffer[] = '^'.$temp2.'\\/{.+}$';
+        }
+        
+        return array_values(array_unique($buffer));
     }
     
     /**
@@ -230,6 +338,23 @@ class Core
                 }
             }
         }
+        
+        $core = $this;
+        Data\Cache::create(Data\CacheTypes::Session, $core::InstanceID, function() use($core)
+        {
+            $configuration = Data\Cache::get($core::Configuration); /* @var $configuration Data\Configuration */
+
+            $coreDbc = IO\Data\Db\Database::getInstance('Core'); /* @var $coreDbc IO\Data\Db\Database */
+            $coreDbc -> query('select `id` from `instance` where `name` = "'.$configuration -> get('App/Application/Title').'"');
+            $result = $coreDbc -> execute();
+
+            if($result['iRowCount'] > 0)
+            {
+                return $result['aResults'][0]['id'];
+            }
+
+            return -1;
+        });
         
         if($refresh)
         {

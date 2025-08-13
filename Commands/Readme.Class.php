@@ -240,7 +240,7 @@ class Readme
         }
         
         \Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Session, \Utphpcore\Core::Message, 'Readme Written');
-        header('Location: '.$_SERVER['REDIRECT_URL']);
+        header('Location: '.(isset($_SERVER['REDIRECT_URL']) ? $_SERVER['REDIRECT_URL'] : '/'));
         exit;
     }
     

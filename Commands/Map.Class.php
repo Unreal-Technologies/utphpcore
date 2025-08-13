@@ -119,7 +119,7 @@ class Map
         }
         
         \Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Session, \Utphpcore\Core::Message, 'Map Written');
-        header('Location: '.$_SERVER['REDIRECT_URL']);
+        header('Location: '.(isset($_SERVER['REDIRECT_URL']) ? $_SERVER['REDIRECT_URL'] : '/'));
         exit;
     }
     
