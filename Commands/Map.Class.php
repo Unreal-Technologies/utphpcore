@@ -118,7 +118,9 @@ class Map
             $mapFile -> fClose();
         }
         
-        echo '<h1>Classmap done</h1>';
+        \Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Session, 'Message', 'Map Written');
+        header('Location: '.$_SERVER['REDIRECT_URL']);
+        exit;
     }
     
     /**

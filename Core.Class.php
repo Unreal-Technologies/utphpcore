@@ -3,15 +3,15 @@ namespace Utphpcore;
 
 class Core
 {
-    public const Start = 0x10000000;
-    public const Version = 0x10000001;
-    public const Root = 0x10000010;
-    public const Temp = 0x10000011;
-    public const Cache = 0x10000012;
-    public const CoreAssets = 0x10000013;
-    public const AppAssets = 0x10000014; 
-    public const AssetManager = 0x10000020;
-    public const Configuration = 0x10000021;
+    public const Start         = __CLASS__.'\\'.(0x10000000);
+    public const Version       = __CLASS__.'\\'.(0x10000001);
+    public const Root          = __CLASS__.'\\'.(0x10000010);
+    public const Temp          = __CLASS__.'\\'.(0x10000011);
+    public const Cache         = __CLASS__.'\\'.(0x10000012);
+    public const CoreAssets    = __CLASS__.'\\'.(0x10000013);
+    public const AppAssets     = __CLASS__.'\\'.(0x10000014); 
+    public const AssetManager  = __CLASS__.'\\'.(0x10000020);
+    public const Configuration = __CLASS__.'\\'.(0x10000021);
     
     /**
      * @param \Closure $cb
@@ -133,6 +133,9 @@ class Core
                     break;
                 case 'readme':
                     new Commands\Readme(Data\Cache::get($this::Root));
+                    break;
+                case 'clear':
+                    new Commands\Clear();
                     break;
                 default:
                     break;

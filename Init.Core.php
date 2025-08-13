@@ -42,4 +42,4 @@ $head = $xhtml -> add('head');
 $head -> add('title') -> text($configuration -> get('App/Application/Title'));
 $xhtml -> add('body/div@.container');
 
-Utphpcore\Debugging::dump($_SERVER);
+Utphpcore\Debugging::dump($_SERVER, Utphpcore\Data\Cache::all(Utphpcore\Data\CacheTypes::Memory), Utphpcore\Data\Cache::all(Utphpcore\Data\CacheTypes::Session));

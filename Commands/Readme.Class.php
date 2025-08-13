@@ -238,6 +238,10 @@ class Readme
             ksort($stream);
             $md -> fWrite(implode('', $stream));
         }
+        
+        \Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Session, 'Message', 'Readme Written');
+        header('Location: '.$_SERVER['REDIRECT_URL']);
+        exit;
     }
     
     /**
