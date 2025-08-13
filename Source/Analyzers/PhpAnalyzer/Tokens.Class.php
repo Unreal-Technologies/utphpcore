@@ -79,6 +79,8 @@ class Tokens
     public const T_IS_EQUAL = 366;
     public const T_CLASS_C = 346;
     public const T_NULLSAFE_OBJECT_OPERATOR = 385;
+    public const T_MATCH = 306;
+    public const T_EVAL = 274;
     
     /**
      * @param int $value
