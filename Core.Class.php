@@ -15,10 +15,22 @@ class Core
     public const Message       = __CLASS__.'\\'.(0xffffffff); 
     
     /**
+     * @var int[]
+     */
+    private array $version = [];
+    
+    /**
+     * @var string|null
+     */
+    private ?string $url = null;
+    
+    /**
      * @param \Closure $cb
      */
     function __construct(\Closure $cb)
     {
+        $this -> version = [0, 0, 0, 1];
+        $this -> url = 'https://github.com/Unreal-Technologies/utphpcore';
         $cb($this);
     }
     
@@ -113,15 +125,15 @@ class Core
             Data\Cache::create(Data\CacheTypes::Session, $core::Version, function() use($core)
             {
                 $configuration = Data\Cache::get($core::Configuration); /* @var $configuration Data\Configuration */
-                $version = explode('.', $configuration -> get('App/Application/Version'));
+                $aVersion = explode('.', $configuration -> get('App/Application/Version'));
                 $url = $configuration -> get('App/Application/Url');
                 if($url === '')
                 {
                     $url = null;
                 }
 
-                $version = new Data\Version($configuration -> get('App/Application/Title'), $version[0], $version[1], $version[2], $version[3], $url);
-                $version -> add(new Data\Version('Utphpcore', 0,0,0,1, 'https://github.com/Unreal-Technologies/utphpcore'));
+                $version = new Data\Version($configuration -> get('App/Application/Title'), $aVersion[0], $aVersion[1], $aVersion[2], $aVersion[3], $url);
+                $version -> add(new Data\Version('Utphpcore', $core -> version[0], $core -> version[1], $core -> version[2], $core -> version[3], $core -> url));
                 
                 return $version;
             });
