@@ -1,3 +1,8 @@
+html, body
+{
+    background-color: #111111;
+}
+
 #execution-time, #version, #copyright
 {
     color: gray;
@@ -24,16 +29,12 @@
 {
     padding-inline-start: 20px;
     white-space: nowrap;
-}
-
-#version ul:first-child
-{
     list-style: none;
     display: none;
     text-align: left;
 }
 
-#version:hover ul:first-child
+#version:hover ul
 {
     display: block;
     position: absolute;

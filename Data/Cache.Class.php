@@ -8,8 +8,7 @@ class Cache
      */
     private static array $aMemory = [];
 
-    /**
-     * 
+    /** 
      * @param string $key
      * @return mixed
      */

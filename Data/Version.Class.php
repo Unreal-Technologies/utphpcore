@@ -120,7 +120,7 @@ class Version
         //Create Url link where needed
         if($this -> sUrl === null)
         {
-            $container -> text($raw);
+            $container -> add('span') -> text($raw);
         }
         else
         {

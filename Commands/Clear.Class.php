@@ -3,6 +3,8 @@ namespace Utphpcore\Commands;
 
 class Clear 
 {
+    /**
+     */
     function __construct()
     {
         $_SESSION = [];

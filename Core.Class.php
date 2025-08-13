@@ -100,11 +100,6 @@ class Core
                 return microtime(true);
             });
             
-            Data\Cache::create(Data\CacheTypes::Session, $core::Version, function()
-            {
-                return new Data\Version('Utphpcore', 0,0,0,1, 'https://github.com/Unreal-Technologies/utphpcore');
-            });
-            
             Data\Cache::create(Data\CacheTypes::Session, $core::AssetManager, function() use($core)
             {
                 return new Data\AssetManager($core);
@@ -113,6 +108,22 @@ class Core
             Data\Cache::create(Data\CacheTypes::Session, $core::Configuration, function() use($core)
             {
                 return new Data\Configuration($core);
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::Version, function() use($core)
+            {
+                $configuration = Data\Cache::get($core::Configuration); /* @var $configuration Data\Configuration */
+                $version = explode('.', $configuration -> get('App/Application/Version'));
+                $url = $configuration -> get('App/Application/Url');
+                if($url === '')
+                {
+                    $url = null;
+                }
+
+                $version = new Data\Version($configuration -> get('App/Application/Title'), $version[0], $version[1], $version[2], $version[3], $url);
+                $version -> add(new Data\Version('Utphpcore', 0,0,0,1, 'https://github.com/Unreal-Technologies/utphpcore'));
+                
+                return $version;
             });
 
             $core -> initializeDbs();
