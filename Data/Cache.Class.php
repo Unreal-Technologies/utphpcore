@@ -9,6 +9,40 @@ class Cache
     private static array $aMemory = [];
 
     /**
+     * 
+     * @param string $key
+     * @return mixed
+     */
+    public  static function getclear(string $key): mixed
+    {
+        $result = self::get($key);
+        if($result !== null)
+        {
+            $list = [CacheTypes::Memory, CacheTypes::Session];
+            foreach($list as $cache)
+            {
+                switch($cache)
+                {
+                    case CacheTypes::Memory:
+                        if(isset(self::$aMemory[$key]))
+                        {
+                            unset(self::$aMemory[$key]);
+                        }
+                        break;
+                    case CacheTypes::Session:
+                        if(isset($_SESSION['aCache'][$key]))
+                        {
+                            unset($_SESSION['aCache'][$key]);
+                        }
+                        break;
+                }
+            }
+        }
+        return $result;
+    }
+
+
+    /**
      * @param string $key
      * @return mixed
      */

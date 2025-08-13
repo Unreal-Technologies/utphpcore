@@ -118,7 +118,7 @@ class Map
             $mapFile -> fClose();
         }
         
-        \Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Session, 'Message', 'Map Written');
+        \Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Session, \Utphpcore\Core::Message, 'Map Written');
         header('Location: '.$_SERVER['REDIRECT_URL']);
         exit;
     }

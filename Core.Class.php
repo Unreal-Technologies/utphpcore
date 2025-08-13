@@ -12,6 +12,7 @@ class Core
     public const AppAssets     = __CLASS__.'\\'.(0x10000014); 
     public const AssetManager  = __CLASS__.'\\'.(0x10000020);
     public const Configuration = __CLASS__.'\\'.(0x10000021);
+    public const Message       = __CLASS__.'\\'.(0xffffffff); 
     
     /**
      * @param \Closure $cb
