@@ -1,8 +1,8 @@
 <?php
 $root = realpath(__DIR__.'/../');
-if(file_exists($root.'/class.map'))
+if(file_exists($root.'/__CACHE__/class.map'))
 {
-    require_once($root.'/class.map');
+    require_once($root.'/__CACHE__/class.map');
 }
 else
 {

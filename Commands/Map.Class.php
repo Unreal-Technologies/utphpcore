@@ -99,7 +99,7 @@ class Map
         
         $ordered = $this -> ReferenceOrderedMapping($references);
         
-        $mapFile = \Utphpcore\IO\File::fromDirectory($directory, 'class.map');
+        $mapFile = \Utphpcore\IO\File::fromDirectory(\Utphpcore\Data\Cache::get(\Utphpcore\Core::Cache), 'class.map');
         if($mapFile -> fOpen('w+'))
         {
             $mapFile -> fWrite('<?php'."\r\n");
