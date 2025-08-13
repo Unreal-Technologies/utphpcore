@@ -35,10 +35,10 @@ set_exception_handler('Utphpcore\Debugging::exceptionHandler');
 register_shutdown_function('\Utphpcore\Core::shutdown');
 \Utphpcore\Core::initialize();
 
-$route = Utphpcore\Data\Cache::get(\Utphpcore\Core::Route); /* @var $route Utphpcore\Data\Route */
+$route = Utphpcore\Data\Cache::get(\Utphpcore\Core::Route); /* @var $route Utphpcore\Data\Route|null */
 if($route === null)
 {
-    throw new \Exception('No route found');
+    throw new \Exception('No route found for: '.$_SERVER['REDIRECT_URL']);
 }
 else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
 {
@@ -50,4 +50,4 @@ else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
     $xhtml -> add('body/div@.container');
 }
 
-Utphpcore\Debugging::dump(Utphpcore\Data\Cache::getclear(\Utphpcore\Core::Message), Utphpcore\Data\Cache::get(\Utphpcore\Core::Route));
+Utphpcore\Debugging::dump(Utphpcore\Data\Cache::getclear(\Utphpcore\Core::Message), Utphpcore\Data\Cache::get(\Utphpcore\Core::Route), $route -> file());

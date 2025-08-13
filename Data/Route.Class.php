@@ -50,12 +50,16 @@ class Route
     public function file(): ?\Utphpcore\IO\File
     {
         $composedPath = 'Pages/'.$this -> mode() -> name.'/'.$this -> match()['method'].'/';
-        $targetFile = realpath(Cache::get(\Utphpcore\Core::Root) -> path().'/'.$composedPath.$this -> target()['target']);
+        
+        $targetFilePath1 = Cache::get(\Utphpcore\Core::Root) -> path().'/'.$composedPath.$this -> target()['target'];
+        $targetFile = realpath($targetFilePath1);
         if($targetFile === false)
         {
-            $targetFile = realpath(__DIR__.'/../'.$composedPath.$this -> target()['target']);
+            $targetFilePath2 = __DIR__.'/../'.$composedPath.$this -> target()['target'];
+            $targetFile = realpath($targetFilePath2);
             if($targetFile === false)
             {
+                throw new \Exception('Cannot find routing path on: "'.$targetFilePath1.'" or "'.$targetFilePath2.'"');
                 return null;
             }
         }
