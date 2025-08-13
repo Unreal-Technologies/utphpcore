@@ -90,6 +90,8 @@ html, body
     overflow: scroll;
     height: 300px;
     width: 100%;
+    margin-top: 15px;
+    border-radius: 25px;
 }
 
 .dump h2

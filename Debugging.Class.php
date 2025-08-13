@@ -221,7 +221,7 @@ class Debugging
             
             XHTML -> get('body/div@.container/div@.row', function(GUI\NoHtml\Xhtml $body) use($title, $self, $arguments, $tokens)
             {
-                $body -> add('div@.dump col s6 z-depth-6', function(GUI\NoHtml\Xhtml $dump) use($title, $self, $arguments, $tokens)
+                $body -> add('div@.dump col s10 offset-s1 z-depth-6', function(GUI\NoHtml\Xhtml $dump) use($title, $self, $arguments, $tokens)
                 {
                     $dump -> add('h2') -> text($title);
                     $dump -> add('span') -> text($self['file'].':'.$self['line']);
