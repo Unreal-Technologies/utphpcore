@@ -5,6 +5,6 @@ enum RoutingModes
 {
     use \Utphpcore\Data\Collections\Enum\TInfo;
     
-    case Raw;
-    case Full;
+    case Data;
+    case Page;
 }

@@ -74,7 +74,7 @@ create table `route`
     `method` enum('get', 'post') not null default('get'),
     `match` varchar(128) not null,
     `type` enum('file', 'function') not null default('file'),
-    `mode` enum('full', 'raw') not null default('full'),
+    `mode` enum('page', 'data') not null default('page'),
     `target` varchar(128) not null,
     `auth` enum('true', 'false') not null,
     primary key(`id`),
@@ -83,6 +83,6 @@ create table `route`
 
 insert into `route`(`default`, `method`, `match`, `target`, `type`, `mode`, `auth`)
 values
-('true', 'get', 'index', 'index.php', 'file', 'full', 'false'),
-('false', 'get', 'login', 'login.php', 'file', 'full', 'false'),
-('false', 'post', 'login', 'login.php', 'file', 'raw', 'false');
+('true', 'get', 'index', 'index.php', 'file', 'page', 'false'),
+('false', 'get', 'login', 'login.php', 'file', 'page', 'false'),
+('false', 'post', 'login', 'login.php', 'file', 'data', 'false');

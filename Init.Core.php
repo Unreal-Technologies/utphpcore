@@ -35,11 +35,19 @@ set_exception_handler('Utphpcore\Debugging::exceptionHandler');
 register_shutdown_function('\Utphpcore\Core::shutdown');
 \Utphpcore\Core::initialize();
 
-$configuration = Utphpcore\Data\Cache::get(\Utphpcore\Core::Configuration); /* @var $configuration \Utphpcore\Data\Configuration */
+$route = Utphpcore\Data\Cache::get(\Utphpcore\Core::Route); /* @var $route Utphpcore\Data\Route */
+if($route === null)
+{
+    throw new \Exception('No route found');
+}
+else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
+{
+    $configuration = Utphpcore\Data\Cache::get(\Utphpcore\Core::Configuration); /* @var $configuration \Utphpcore\Data\Configuration */
 
-$xhtml = new \Utphpcore\GUI\NoHtml\Xhtml('<!DOCTYPE html>');
-$head = $xhtml -> add('head');
-$head -> add('title') -> text($configuration -> get('App/Application/Title'));
-$xhtml -> add('body/div@.container');
+    $xhtml = new \Utphpcore\GUI\NoHtml\Xhtml('<!DOCTYPE html>');
+    $head = $xhtml -> add('head');
+    $head -> add('title') -> text($configuration -> get('App/Application/Title'));
+    $xhtml -> add('body/div@.container');
+}
 
 Utphpcore\Debugging::dump(Utphpcore\Data\Cache::getclear(\Utphpcore\Core::Message), Utphpcore\Data\Cache::get(\Utphpcore\Core::Route));
