@@ -194,21 +194,24 @@ class Directory implements IDirectory
 
         $aOutput = [];
         //Open direcory
-        if ($this -> open()) {
-
+        if ($this -> open()) 
+        {
             //set output
             $sOut = null;
 
             //Read through
-            while ($this -> read($sOut) !== false) {
+            while ($this -> read($sOut) !== false) 
+            {
 
                 //skip directory fallback
-                if ($sOut === '.' || $sOut === '..') {
+                if ($sOut === '.' || $sOut === '..') 
+                {
                     continue;
                 }
 
                 //if regex is set, match only on regex
-                if ($sRegex !== null && !preg_match($sRegex, $sOut)) {
+                if ($sRegex !== null && !preg_match($sRegex, $sOut)) 
+                {
                     continue;
                 }
 
@@ -216,9 +219,12 @@ class Directory implements IDirectory
                 $sPath = $this -> sPath . '/' . $sOut;
 
                 //determine what kind of output
-                if (is_dir($sPath)) {
+                if (is_dir($sPath)) 
+                {
                     $aOutput[] = self::fromString($sPath);
-                } else {
+                } 
+                else 
+                {
                     $aOutput[] = File::fromString($sPath);
                 }
             }
@@ -242,7 +248,8 @@ class Directory implements IDirectory
     public function read(?string &$out): bool
     {
         $out = readdir($this -> rHandler);
-        if ($out === false) {
+        if ($out === false) 
+        {
             $out = null;
             return false;
         }
@@ -256,7 +263,8 @@ class Directory implements IDirectory
     public function open(): bool
     {
         //Check if handler is set or not exists
-        if ($this -> rHandler !== null || !$this -> bExists) {
+        if (($this -> rHandler !== null && $this -> rHandler !== 0) || !$this -> bExists) 
+        {
             return false;
         }
         
@@ -264,7 +272,8 @@ class Directory implements IDirectory
         $this -> rHandler = opendir($this -> sPath);
         
         //Check handler
-        if ($this -> rHandler === false) {
+        if ($this -> rHandler === false) 
+        {
             $this -> rHandler = null;
             return false;
         }
@@ -277,7 +286,8 @@ class Directory implements IDirectory
     #[\Override]
     public function close(): void
     {
-        if ($this -> rHandler !== null) {
+        if ($this -> rHandler !== null) 
+        {
             closedir($this -> rHandler);
         }
     }
@@ -289,7 +299,7 @@ class Directory implements IDirectory
     private function __construct(string $sDir)
     {
         if (self::$aRam === null) 
-		{
+        {
             self::$aRam = [];
         }
         
@@ -297,10 +307,10 @@ class Directory implements IDirectory
         $this -> bExists = file_exists($sDir) || is_dir($sDir);
 		
         if ($this -> bExists) 
-		{
+        {
             $this -> sPath = realpath($sDir);
             if (!is_dir($this -> sPath))
-			{
+            {
                 throw new \Exception($this -> sPath . ' is not a ' . get_class($this));
             }
         }

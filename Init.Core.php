@@ -6,6 +6,7 @@ if(file_exists($root.'/class.map'))
 }
 else
 {
+    require_once('Data/Cache.Class.php');
     require_once('Core.Class.php');
     require_once('Debugging.Class.php');
 }
@@ -34,6 +35,11 @@ set_exception_handler('Utphpcore\Debugging::exceptionHandler');
 register_shutdown_function('\Utphpcore\Core::shutdown');
 \Utphpcore\Core::initialize();
 
+$configuration = Utphpcore\Data\Cache::get(\Utphpcore\Core::Configuration); /* @var $configuration \Utphpcore\Data\Configuration */
+
 $xhtml = new \Utphpcore\GUI\NoHtml\Xhtml('<!DOCTYPE html>');
 $head = $xhtml -> add('head');
+$head -> add('title') -> text($configuration -> get('App/Application/Title'));
 $xhtml -> add('body/div@.container');
+
+Utphpcore\Debugging::dump($_SERVER);

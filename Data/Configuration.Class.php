@@ -14,7 +14,7 @@ class Configuration
      */
     function __construct(\Utphpcore\Core $core)
     {
-        $assetManager = $core -> get($core::AssetManager); /* @var $assetManager AssetManager */
+        $assetManager = Cache::get($core::AssetManager); /* @var $assetManager AssetManager */
         
         $configCore = $assetManager -> get('Config.Core.ini', AssetTypes::Cache) ?-> asIni(); /* @var $configCore \Utphpcore\IO\Common\Ini|null */
         $configApp = $assetManager -> get('Config.App.ini', AssetTypes::Cache) ?-> asIni(); /* @var $configApp \Utphpcore\IO\Common\Ini|null */

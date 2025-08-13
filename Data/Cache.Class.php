@@ -9,18 +9,57 @@ class Cache
     private static array $aMemory = [];
 
     /**
-     * @param CacheTypes $cache
      * @param string $key
      * @return mixed
      */
-    public static function get(CacheTypes $cache, string $key): mixed
+    public static function get(string $key): mixed
+    {
+        $list = [CacheTypes::Memory, CacheTypes::Session];
+        
+        foreach($list as $cache)
+        {
+            $result = null;
+            switch($cache)
+            {
+                case CacheTypes::Memory:
+                    $result = isset(self::$aMemory[$key]) ? self::$aMemory[$key] : null;
+                    break;
+                case CacheTypes::Session:
+                    $result = isset($_SESSION['aCache'][$key]) ? $_SESSION['aCache'][$key] : null;
+                    break;
+            }
+            
+            if($result !== null)
+            {
+                return $result;
+            }
+        }
+        
+        return null;
+    }
+    
+    /** 
+     * @param CacheTypes $cache
+     * @param string $key
+     * @param \Closure $callback
+     * @return void
+     */
+    public static function create(CacheTypes $cache, string $key, \Closure $callback): void
     {
         switch($cache)
         {
             case CacheTypes::Memory:
-                return isset(self::$aMemory[$key]) ? self::$aMemory[$key] : null;
+                if(!isset(self::$aMemory[$key]))
+                {
+                    self::$aMemory[$key] = $callback();
+                }
+                break;
             case CacheTypes::Session:
-                return isset($_SESSION['aCache'][$key]) ? $_SESSION['aCache'][$key] : null;
+                if(!isset($_SESSION['aCache'][$key]))
+                {
+                    $_SESSION['aCache'][$key] = $callback();
+                }
+                break;
         }
     }
     

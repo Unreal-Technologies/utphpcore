@@ -3,20 +3,15 @@ namespace Utphpcore;
 
 class Core
 {
-    public const Start = 0x00000000;
-    public const Version = 0x00000001;
-    public const Root = 0x01000000;
-    public const Temp = 0x01000001;
-    public const Cache = 0x01000002;
-    public const CoreAssets = 0x01000003;
-    public const AppAssets = 0x01000004; 
-    public const AssetManager = 0x02000000;
-    public const Configuration = 0x02000001;
-    
-    /**
-     * @var array
-     */
-    private array $aData = [];
+    public const Start = 0x10000000;
+    public const Version = 0x10000001;
+    public const Root = 0x10000010;
+    public const Temp = 0x10000011;
+    public const Cache = 0x10000012;
+    public const CoreAssets = 0x10000013;
+    public const AppAssets = 0x10000014; 
+    public const AssetManager = 0x10000020;
+    public const Configuration = 0x10000021;
     
     /**
      * @param \Closure $cb
@@ -32,9 +27,9 @@ class Core
      */
     public function physicalToRelativePath(string $path): string
     {
-        $basePath = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].''.pathinfo($_SERVER['SCRIPT_NAME'])['dirname'].'/';
-        $root = $this -> get(self::Root) -> path();
-        
+        $basePath = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].''.str_replace('//', '/', pathinfo($_SERVER['SCRIPT_NAME'])['dirname'].'/');
+        $root = Data\Cache::get(self::Root) -> path();
+
         $new = str_replace([$root.'\\', $root.'/', '\\', '//', ':/'], ['', '', '/', '/', '://'], $path);
         if($new !== $path)
         {
@@ -43,29 +38,7 @@ class Core
 
         throw new Data\Exceptions\NotImplementedException($path);
     }
-    
-    /**
-     * @param int $property
-     * @param mixed $value
-     */
-    public function set(int $property, mixed $value)
-    {
-        $this -> aData[$property] = $value;
-    }
-    
-    /**
-     * @param int $property
-     * @return mixed
-     */
-    public function get(int $property): mixed
-    {
-        if(isset($this -> aData[$property]))
-        {
-            return $this -> aData[$property];
-        }
-        return null;
-    }
-    
+
     /**
      * @return void
      */
@@ -75,30 +48,72 @@ class Core
         
         define('UTPHPCORE', new Core(function(Core $core)
         {
-            $root = IO\Directory::fromString(__DIR__.'/../');
-            
-            $temp = IO\Directory::fromDirectory($root, '/__TEMP__');
-            if($temp -> exists())
+            Data\Cache::create(Data\CacheTypes::Session, $core::Root, function()
             {
-                $temp -> remove();
-            }
-            $temp -> create();
+                return IO\Directory::fromString(__DIR__.'/../');
+            });
             
-            $cache = IO\Directory::fromDirectory($root, '__CACHE__');
-            if(!$cache -> exists())
+            Data\Cache::create(Data\CacheTypes::Session, $core::Temp, function() use($core)
             {
-                $cache -> create();
-            }
+                $root = Data\Cache::get($core::Root);
+                $temp = IO\Directory::fromDirectory($root, '/__TEMP__');
+                if($temp -> exists())
+                {
+                    $temp -> remove();
+                }
+                $temp -> create();
+                return $temp;
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::Cache, function() use($core)
+            {
+                $root = Data\Cache::get($core::Root);
+                $cache = IO\Directory::fromDirectory($root, '__CACHE__');
+                if(!$cache -> exists())
+                {
+                    $cache -> create();
+                }
+                return $cache;
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::CoreAssets, function() use($core)
+            {
+                $root = Data\Cache::get($core::Root);
+                return IO\Directory::fromString($root -> path().'/Utphpcore/Assets');
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::AppAssets, function() use($core)
+            {
+                $root = Data\Cache::get($core::Root);
+                return IO\Directory::fromString($root -> path().'/Assets');
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::AppAssets, function() use($core)
+            {
+                $root = Data\Cache::get($core::Root);
+                return IO\Directory::fromString($root -> path().'/Assets');
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Memory, $core::Start, function()
+            {
+                return microtime(true);
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::Version, function()
+            {
+                return new Data\Version('Utphpcore', 0,0,0,1, 'https://github.com/Unreal-Technologies/utphpcore');
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::AssetManager, function() use($core)
+            {
+                return new Data\AssetManager($core);
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::Configuration, function() use($core)
+            {
+                return new Data\Configuration($core);
+            });
 
-            $core -> set($core::Root, $root);
-            $core -> set($core::Temp, $temp);
-            $core -> set($core::Cache, $cache);
-            $core -> set($core::CoreAssets, IO\Directory::fromString($root -> path().'/Utphpcore/Assets'));
-            $core -> set($core::AppAssets, IO\Directory::fromString($root -> path().'/Assets'));
-            $core -> set($core::Start, microtime(true));
-            $core -> set($core::Version, new Data\Version('Utphpcore', 1,0,0,0, 'https://github.com/Unreal-Technologies/utphpcore'));
-            $core -> set($core::AssetManager, new Data\AssetManager($core));
-            $core -> set($core::Configuration, new Data\Configuration($core));
             $core -> initializeDbs();
             $core -> initializeAdminCommands();
         }));
@@ -114,10 +129,10 @@ class Core
             switch($_GET['cmd'])
             {
                 case 'map':
-                    new Commands\Map($this -> get($this::Root));
+                    new Commands\Map(Data\Cache::get($this::Root));
                     break;
                 case 'readme':
-                    new Commands\Readme($this -> get($this::Root));
+                    new Commands\Readme(Data\Cache::get($this::Root));
                     break;
                 default:
                     break;
@@ -132,8 +147,8 @@ class Core
      */
     private function initializeDbs(): void
     {
-        $configuration = $this -> get($this::Configuration); /* @var $configuration Data\Configuration */
-        $assetManager = $this -> get($this::AssetManager); /* @var $assetManager Data\AssetManager */
+        $configuration = Data\Cache::get($this::Configuration); /* @var $configuration Data\Configuration */
+        $assetManager = Data\Cache::get($this::AssetManager); /* @var $assetManager Data\AssetManager */
         $cases = [Data\AssetTypes::Core, Data\AssetTypes::App];
 
         $refresh = false;
@@ -216,12 +231,12 @@ class Core
         {
             XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body)
             {
-                $dif = microtime(true) - UTPHPCORE -> get(self::Start);
+                $dif = microtime(true) - Data\Cache::get(self::Start);
 
                 $body -> add('div@#execution-time') -> text('Process time: '.number_format(round($dif * 1000, 4), 4, ',', '.').' ms');
                 $body -> add('div@#version', function(GUI\NoHtml\Xhtml $div)
                 {
-                    UTPHPCORE -> get(self::Version) -> Render($div);
+                    Data\Cache::get(self::Version) -> Render($div);
                 });
             });
             XHTML -> get('head', function(GUI\NoHtml\Xhtml $head)

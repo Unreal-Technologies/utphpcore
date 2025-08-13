@@ -263,7 +263,7 @@ class Database extends \Utphpcore\Data\Raw
         $cacheKey = $oStatement === null ? null : $oStatement -> queryString;
         
         //Get Cache Data
-        $mCached = $cacheKey === null ? null : \Utphpcore\Data\Cache::get($cache, $cacheKey);
+        $mCached = $cacheKey === null ? null : \Utphpcore\Data\Cache::get($cacheKey);
         if($mCached !== null)
         {
             //Update Exec time to 0 (cache)

@@ -13,7 +13,7 @@ class AssetManager
      */
     public function __construct(\Utphpcore\Core $core)
     {
-        $this -> aPaths = [$core -> get($core::Cache), $core -> get($core::Temp), $core -> get($core::CoreAssets), $core -> get($core::AppAssets)];
+        $this -> aPaths = [Cache::get($core::Cache), Cache::get($core::Temp), Cache::get($core::CoreAssets), Cache::get($core::AppAssets)];
     }
     
     /**
