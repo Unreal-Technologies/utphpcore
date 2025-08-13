@@ -118,6 +118,13 @@ html, body
     color: #00aa00;
 }
 
+.dump xmp
+{
+    padding: 0px;
+    margin: 0px;
+    display: inline;
+}
+
 .dump #trace
 {
     color: gray;
