@@ -3,6 +3,12 @@ namespace Utphpcore\GUI\NoHtml\Materialize;
 
 class Card
 {
+    /**
+     * @param \Utphpcore\GUI\NoHtml\Xhtml $container
+     * @param string $title
+     * @param string $description
+     * @param \Utphpcore\Data\Collections\KeyValuePair $links
+     */
     function __construct(\Utphpcore\GUI\NoHtml\Xhtml $container, string $title, string $description, \Utphpcore\Data\Collections\KeyValuePair $links)
     {
         $self = $container -> add('div@.col s3/div@.card');
