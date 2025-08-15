@@ -93,6 +93,16 @@ class Xhtml implements IXhtml
     }
     
     /**
+     * @return Xhtml
+     */
+    public function javascript(): Xhtml
+    {
+        $script = $this -> add('script');
+        $script -> attributes() -> set('type', 'text/javascript');
+        return $script;
+    }
+    
+    /**
      * @return Attributes
      */
     #[\Override]

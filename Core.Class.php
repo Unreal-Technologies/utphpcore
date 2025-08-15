@@ -27,6 +27,8 @@ class Core
      */
     private ?string $url = null;
     
+    private static array $shutdownBody = [];
+    
     /**
      * @param \Closure $cb
      */
@@ -383,44 +385,120 @@ class Core
     }
     
     /**
+     * @param GUI\NoHtml\Xhtml $container
+     * @return void
+     */
+    private static function shutdown_version(GUI\NoHtml\Xhtml $container): void
+    {
+        $version = Data\Cache::get(self::Version); /* @var $version = Data\Version|null */
+        if($version !== null)
+        {
+            $container -> add('div@#version', function(GUI\NoHtml\Xhtml $div) use($version)
+            {
+                $version -> Render($div);
+            });
+        }
+    }
+    
+    /**
+     * @param GUI\NoHtml\Xhtml $container
+     * @return void
+     */
+    private static function shutdown_executiontime(GUI\NoHtml\Xhtml $container): void
+    {
+        $dif = microtime(true) - Data\Cache::get(self::Start);
+
+        $execTime = $container -> add('div@#execution-time');
+        new GUI\NoHtml\Materialize\Icon($execTime, GUI\NoHtml\Materialize\Icon\Icons::AccessTime);
+        $execTime -> text(number_format(round($dif * 1000, 4), 4, ',', '.').' ms');
+    }
+    
+    /**
+     * @param GUI\NoHtml\Xhtml $container
+     * @return void
+     */
+    private static function shutdown_messagestack(GUI\NoHtml\Xhtml $container): void
+    {
+        $messageStack = Data\Cache::get(Core::Message);
+        while(!$messageStack -> isEmpty())
+        {
+            $message = $messageStack -> pop();
+            $messageToast = $container -> add('script');
+            $messageToast -> attributes() -> set('type', 'text/javascript');
+            $messageToast -> text('var mToast = M.toast('
+                    . '{'
+                        . 'html: \''.$message.'\', '
+                        . 'displayLength: 15000, '
+                        . 'classes: \'toast-system-message rounded\''
+                    . '}'
+                . ');'
+            );
+        }
+    }
+    
+    /**
+     * @param string $key
+     * @param \Closure $callback
+     */
+    public static function register_shutdown_body(string $key, \Closure $callback)
+    {
+        if(!isset(self::$shutdownBody[$key]))
+        {
+            self::$shutdownBody[$key] = $callback;
+        }
+    }
+    
+    /**
      * @return void
      */
     public static function shutdown(): void
     {
         if(defined('XHTML'))
         {
-            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body)
+            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $container)
             {
-                $version = Data\Cache::get(self::Version); /* @var $version = Data\Version|null */
-                $dif = microtime(true) - Data\Cache::get(self::Start);
-
-                $execTime = $body -> add('div@#execution-time');
-                new GUI\NoHtml\Materialize\Icon($execTime, GUI\NoHtml\Materialize\Icon\Icons::AccessTime);
-                $execTime -> text(number_format(round($dif * 1000, 4), 4, ',', '.').' ms');
-                if($version !== null)
+                self::shutdown_version($container);
+                self::shutdown_executiontime($container);
+                self::shutdown_messagestack($container);
+            });
+            
+            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body)
+            {
+//                $fabAdmin = $body -> add('div@.fixed-action-btn fab-admin');
+//                new GUI\NoHtml\Materialize\Icon($fabAdmin -> add('a@.btn-floating btn-large red'), GUI\NoHtml\Materialize\Icon\Icons::Security);
+//                
+//                $fabAdminUl = $fabAdmin -> add('ul');
+//                
+//                $data = [
+//                    '?cmd=map' => [GUI\NoHtml\Materialize\Icon\Icons::Map, 'Class Mapper'],
+//                    '?cmd=readme' => [GUI\NoHtml\Materialize\Icon\Icons::ChromeReaderMode, 'Readme.md creator'],
+//                    '?cmd=clear' => [GUI\NoHtml\Materialize\Icon\Icons::BorderClear, 'Clear Cache']
+//                ];
+//
+//                foreach($data as $cmd => $icon)
+//                {
+//                    $a = $fabAdminUl -> add('li/a@.btn-floating blue');
+//                    $a -> attributes() -> set('href', $cmd);
+//
+//                    new GUI\NoHtml\Materialize\Tooltip($a, $icon[1]);
+//                    new GUI\NoHtml\Materialize\Icon($a, $icon[0]);
+//                }
+//
+//                $script = $body -> add('script');
+//                $script -> attributes() -> set('type', 'text/javascript');
+//                $script -> text('document.addEventListener(\'DOMContentLoaded\', function() '
+//                    . '{'
+//                        . 'var elems = document.querySelectorAll(\'.fixed-action-btn\');'
+//                        . 'var instances = M.FloatingActionButton.init(elems, {'
+//                            . 'direction: \'left\', '
+//                            . 'hoverEnabled: false'
+//                        . '});'
+//                    . '});'
+//                );
+                
+                foreach(self::$shutdownBody as $callback)
                 {
-                    $body -> add('div@#version', function(GUI\NoHtml\Xhtml $div) use($version)
-                    {
-                        $version -> Render($div);
-                    });
-                }
-                $messageStack = Data\Cache::get(Core::Message);
-                if(!$messageStack -> isEmpty())
-                {
-                    while(!$messageStack -> isEmpty())
-                    {
-                        $message = $messageStack -> pop();
-                        $messageToast = $body -> add('script');
-                        $messageToast -> attributes() -> set('type', 'text/javascript');
-                        $messageToast -> text('var mToast = M.toast('
-                                . '{'
-                                    . 'html: \''.$message.'\', '
-                                    . 'displayLength: 15000, '
-                                    . 'classes: \'toast-system-message rounded\''
-                                . '}'
-                            . ');'
-                        );
-                    }
+                    $callback($body);
                 }
             });
             XHTML -> get('head', function(GUI\NoHtml\Xhtml $head)
