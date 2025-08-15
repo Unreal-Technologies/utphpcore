@@ -94,7 +94,7 @@ class Core
             
             Data\Cache::create(Data\CacheTypes::Session, $core::Message, function()
             {
-                return new Data\Stack();
+                return new Core\Messages();
             });
             
             Data\Cache::create(Data\CacheTypes::Session, $core::CoreAssets, function() use($core)
