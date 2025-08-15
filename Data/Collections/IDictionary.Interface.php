@@ -10,4 +10,5 @@ interface IDictionary
     public function toArray(): array;
     public function keys(): array;
     public function values(): array;
+    public static function fromArray(array $kvp): IDictionary;
 }

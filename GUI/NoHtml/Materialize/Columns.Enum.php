@@ -12,7 +12,7 @@ enum Columns: string
     case S5 = 's5';
     case S6 = 's6';
     case S7 = 's7';
-    case S18 = 's8';
+    case S8 = 's8';
     case S9 = 's9';
     case S10 = 's10';
     case S11 = 's11';

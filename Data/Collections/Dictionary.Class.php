@@ -2,7 +2,7 @@
 
 namespace Utphpcore\Data\Collections;
 
-class Dictionary implements IDictionary
+class Dictionary implements IDictionary, \ArrayAccess
 {
     /**
      * @var array
@@ -10,14 +10,90 @@ class Dictionary implements IDictionary
     protected array $aBuffer = [];
 
     /**
-     * @param array $kvp
-     * @return Dictionary
+     * @param mixed $index
+     * @return void
      */
-    public static function fromArray(array $kvp): Dictionary
+    public function offsetUnset(mixed $index): void {}
+    
+    /**
+     * @param mixed $index
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet(mixed $index, mixed $value): void
+    {  
+        if(isset($this -> aBuffer[$index])) 
+        {
+            unset($this -> aBuffer[$index]);
+        }
+
+        $u = &$this -> aBuffer[$index];
+        if(is_array($value)) 
+        {
+            $u = new ArrayAccessImpl();
+            foreach($value as $idx => $e)
+            {
+                $u[$idx] = $e;
+            }
+        } 
+        else
+        {
+            $u=$value;
+        }
+    }
+    
+    /**
+     * @param mixed $index
+     * @return mixed
+     */
+    public function offsetGet(mixed $index): mixed
+    {
+        if(!isset($this -> aBuffer[$index]))
+        {
+            $this -> aBuffer[$index] = new ArrayAccessImpl();
+        }
+
+        return $this -> aBuffer[$index];
+    }
+    
+    /**
+     * @param mixed $index
+     * @return bool
+     */
+    public function offsetExists(mixed $index): bool
+    {
+        if(isset($this -> aBuffer[$index])) 
+        {
+            if($this -> aBuffer[$index] instanceof ArrayAccessImpl) 
+            {
+                if(count($this -> aBuffer[$index] -> data) > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            } 
+            else
+            {
+                return true;
+            }
+        } 
+        else
+        {
+            return false;
+        }
+    }
+    
+    /**
+     * @param array $kvp
+     * @return IDictionary
+     */
+    public static function fromArray(array $kvp): IDictionary
     {
         $dic = new Dictionary();
-        $dic -> aBuffer = $kvp;
-
+        $dic['X'] = 'Y';
         return $dic;
     }
 
