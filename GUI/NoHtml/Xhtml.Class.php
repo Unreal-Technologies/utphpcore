@@ -223,10 +223,17 @@ class Xhtml implements IXhtml
      * @return void
      */
     #[\Override]
-    public function clear(): void
+    public function clear(Clearmodes $mode = Clearmodes::Both): void
     {
-        $this -> aChildren = [];
-        $this -> oAttributes -> Clear();
+        if($mode === Clearmodes::Both || $mode === Clearmodes::Children)
+        {
+            $this -> aChildren = [];
+        }
+        if($mode === Clearmodes::Both || $mode === Clearmodes::Attributes)
+        {
+            $this -> oAttributes -> Clear();
+        }
+        
     }
     
     /** 

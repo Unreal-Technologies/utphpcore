@@ -10,6 +10,6 @@ interface IXhtml
     public function text(string $text): void;
     public function append(mixed $content): void;
     public function children(): array;
-    public function clear(): void;
+    public function clear(Clearmodes $mode = Clearmodes::Both): void;
     public function get(string $path, \Closure $callback = null): array;
 }

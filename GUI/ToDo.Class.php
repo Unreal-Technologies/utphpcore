@@ -22,9 +22,8 @@ class ToDo
             XHTML -> get('body/div@.container/div@.row', function(NoHtml\Xhtml $container) use($arguments, $self)
             {
                 $children = $container -> children();
-                $container -> clear();
-                $container -> attributes() -> set('class', 'row');
-                
+                $container -> clear(NoHtml\Clearmodes::Children);
+
                 $table = $container -> add('div@.col s6 offset-s3/table');
                 $tHead = $table -> add('thead');
                 
