@@ -19,10 +19,24 @@ class Router
     private array $aRoutes = [];
     
     /**
+     * @var string|null
+     */
+    private ?string $defaultRoute = null;
+    
+    /**
+     * @return string
+     */
+    public function defaultRoute(): string
+    {
+        return $this -> defaultRoute;
+    }
+    
+    /**
      * @param string $default
      */
     public function __construct(string $default) 
     {
+        $this -> defaultRoute = $default;
         $composedUrl = $default;
         if(isset($_SERVER['REDIRECT_URL']))
         {
@@ -80,6 +94,21 @@ class Router
                 }
             }
         }
+        
+        $depth = Cache::get('Router-depth');
+        if($depth === null)
+        {
+            Cache::set(CacheTypes::Session, \Utphpcore\Core::Message, 'No route found for: '.$_SERVER['REDIRECT_URL']);
+            Cache::set(CacheTypes::Memory, 'Router-depth', 1);
+            
+            $this -> sInput = $this -> defaultRoute;
+            
+            $match = $this -> match();
+            Cache::clear(CacheTypes::Memory, 'Router-depth');
+            
+            return $match;
+        }
+        
         return null;
     }
     

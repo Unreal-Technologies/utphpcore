@@ -196,7 +196,7 @@ class Core
                 . '`method`, `match`, `target`, `type`, `auth`, `mode` '
                 . 'from `route` '
                 . 'where ( `instance-id` = '.$instanceId.' or `instance-id` is null ) '
-                . 'and (`match` regexp \''.implode('\' or `match` regexp \'', $possibilities).'\') '
+                . 'and ((`match` regexp \''.implode('\' or `match` regexp \'', $possibilities).'\') or (`match` = "'.$defaultRoute.'" and `default` = "true")) '
                 . ($authenticated ? '' : 'and `auth` = "false" ')
                 . ($isServerAdmin ? '' : 'and `type` != \'function\' ')
             );
