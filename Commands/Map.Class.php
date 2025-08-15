@@ -181,7 +181,7 @@ class Map
     private function compareReferences(array $fileToObject, array $objectReference, array $fileData): array
     {
         $references = [];
-        $internalClasses = ['\Exception'];
+        $internalClasses = ['\Exception', '\ArrayAccess'];
         
         foreach($fileToObject as $hash => $required)
         {

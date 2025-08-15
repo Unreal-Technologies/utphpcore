@@ -135,3 +135,11 @@ html, body
 {
     min-width: 100%;
 }
+
+.card
+{
+    background-color: #222222;
+    border-radius: 15px;
+    border-width: 1px;
+    broder-color: #333333;
+}
