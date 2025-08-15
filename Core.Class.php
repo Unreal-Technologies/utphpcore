@@ -397,6 +397,20 @@ class Core
                         $version -> Render($div);
                     });
                 }
+                $message = Data\Cache::getclear(self::Message);
+                if($message !== null)
+                {
+                    $messageToast = $body -> add('script');
+                    $messageToast -> attributes() -> set('type', 'text/javascript');
+                    $messageToast -> text('var mToast = M.toast('
+                            . '{'
+                                . 'html: \''.$message.'\', '
+                                . 'displayLength: 15000, '
+                                . 'classes: \'toast-system-message rounded\''
+                            . '}'
+                        . ');'
+                    );
+                }
             });
             XHTML -> get('head', function(GUI\NoHtml\Xhtml $head)
             {

@@ -51,5 +51,3 @@ else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
 }
 
 require_once($route -> file() -> path());
-
-Utphpcore\Debugging::dump(Utphpcore\Data\Cache::getclear(\Utphpcore\Core::Message));

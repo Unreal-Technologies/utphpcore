@@ -143,3 +143,9 @@ html, body
     border-width: 1px;
     broder-color: #333333;
 }
+
+.toast-system-message .error
+{
+    color: #aa0000;
+    font-weight: bold;
+}
