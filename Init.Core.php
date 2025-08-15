@@ -52,4 +52,4 @@ else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
 
 require_once($route -> file() -> path());
 
-new Utphpcore\GUI\ToDo('Authentication Login & register', 'Main menu', 'Admin menu', 'Put command behind authentication', 'Add descriptions for cards.', 'option to disable process time', 'System message time information');
+new Utphpcore\GUI\ToDo('Authentication Login & register', 'Main menu', 'Admin menu', 'Put command behind authentication', 'option to disable process time', 'System message time information');
