@@ -81,6 +81,7 @@ class Tokens
     public const T_NULLSAFE_OBJECT_OPERATOR = 385;
     public const T_MATCH = 306;
     public const T_EVAL = 274;
+    public const T_PRINT = 280;
     
     /**
      * @param int $value

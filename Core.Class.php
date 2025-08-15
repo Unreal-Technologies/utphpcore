@@ -394,7 +394,9 @@ class Core
                 $version = Data\Cache::get(self::Version); /* @var $version = Data\Version|null */
                 $dif = microtime(true) - Data\Cache::get(self::Start);
 
-                $body -> add('div@#execution-time') -> text('Process time: '.number_format(round($dif * 1000, 4), 4, ',', '.').' ms');
+                $execTime = $body -> add('div@#execution-time');
+                new GUI\NoHtml\Materialize\Icon($execTime, GUI\NoHtml\Materialize\Icon\Icons::AccessTime);
+                $execTime -> text(number_format(round($dif * 1000, 4), 4, ',', '.').' ms');
                 if($version !== null)
                 {
                     $body -> add('div@#version', function(GUI\NoHtml\Xhtml $div) use($version)
