@@ -98,7 +98,7 @@ class Router
         $depth = Cache::get('Router-depth');
         if($depth === null)
         {
-            Cache::set(CacheTypes::Session, \Utphpcore\Core::Message, 'No route found for: &nbsp;<span class="error">'.$_SERVER['REDIRECT_URL'].'</span>');
+            Cache::get(\Utphpcore\Core::Message) -> push('No route found for: &nbsp;<span class="error">'.$_SERVER['REDIRECT_URL'].'</span>');
             Cache::set(CacheTypes::Memory, 'Router-depth', 1);
             
             $this -> sInput = $this -> defaultRoute;

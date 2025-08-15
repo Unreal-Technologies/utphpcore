@@ -92,6 +92,11 @@ class Core
                 return $cache;
             });
             
+            Data\Cache::create(Data\CacheTypes::Session, $core::Message, function()
+            {
+                return new Data\Stack();
+            });
+            
             Data\Cache::create(Data\CacheTypes::Session, $core::CoreAssets, function() use($core)
             {
                 $root = Data\Cache::get($core::Root);
@@ -397,19 +402,23 @@ class Core
                         $version -> Render($div);
                     });
                 }
-                $message = Data\Cache::getclear(self::Message);
-                if($message !== null)
+                $messageStack = Data\Cache::get(Core::Message);
+                if(!$messageStack -> isEmpty())
                 {
-                    $messageToast = $body -> add('script');
-                    $messageToast -> attributes() -> set('type', 'text/javascript');
-                    $messageToast -> text('var mToast = M.toast('
-                            . '{'
-                                . 'html: \''.$message.'\', '
-                                . 'displayLength: 15000, '
-                                . 'classes: \'toast-system-message rounded\''
-                            . '}'
-                        . ');'
-                    );
+                    while(!$messageStack -> isEmpty())
+                    {
+                        $message = $messageStack -> pop();
+                        $messageToast = $body -> add('script');
+                        $messageToast -> attributes() -> set('type', 'text/javascript');
+                        $messageToast -> text('var mToast = M.toast('
+                                . '{'
+                                    . 'html: \''.$message.'\', '
+                                    . 'displayLength: 15000, '
+                                    . 'classes: \'toast-system-message rounded\''
+                                . '}'
+                            . ');'
+                        );
+                    }
                 }
             });
             XHTML -> get('head', function(GUI\NoHtml\Xhtml $head)
