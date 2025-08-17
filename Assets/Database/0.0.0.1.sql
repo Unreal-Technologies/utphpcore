@@ -85,4 +85,6 @@ insert into `route`(`default`, `method`, `match`, `target`, `type`, `mode`, `aut
 values
 ('true', 'get', 'index', 'index.php', 'file', 'page', 'false'),
 ('false', 'modal', 'login', 'login.php', 'file', 'modal', 'false'),
-('false', 'post', 'login', 'login.php', 'file', 'data', 'false');
+('false', 'post', 'login', 'login.php', 'file', 'data', 'false'),
+('false', 'modal', 'register', 'register.php', 'file', 'modal', 'false'),
+('false', 'post', 'register', 'register.php', 'file', 'data', 'false');

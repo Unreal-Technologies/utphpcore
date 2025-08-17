@@ -155,6 +155,7 @@ html, body, .modal
     left: 10px;
     top: 80px;
     max-height: 56px;
+    max-width: 56px;
 }
 
 .modal
