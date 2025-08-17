@@ -82,6 +82,9 @@ class Tokens
     public const T_MATCH = 306;
     public const T_EVAL = 274;
     public const T_PRINT = 280;
+    public const T_INLINE_HTML = 267;
+    public const T_CLOSE_TAG = 391;
+    public const T_BOOL_CAST = 382;
     
     /**
      * @param int $value

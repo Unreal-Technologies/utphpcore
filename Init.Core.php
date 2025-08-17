@@ -48,9 +48,38 @@ else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
     $head = $xhtml -> add('head');
     $head -> add('title') -> text($configuration -> get('App/Application/Title'));
     $xhtml -> add('body/div@.container');
+    
+    $xhtml -> get('body', function(Utphpcore\GUI\NoHtml\Xhtml $body)
+    {
+        $modal = $body -> add('div@#utphpcoremodal&.modal');
+        $modal -> add('div@.modal-content') -> text('--content--');
+        $modal -> add('div@.modal-footer') -> text('--footer--');
+    });
+    
+    \Utphpcore\Core::register_shutdown_body('modal', function(Utphpcore\GUI\NoHtml\Xhtml $body)
+    {
+        $body ->javascript() -> text('function modal(url)
+        {
+            var modal = document.getElementById(\'utphpcoremodal\');
+            var instance = M.Modal.getInstance(modal);
+            var content = modal.getElementsByClassName(\'modal-content\')[0];
+            var footer = modal.getElementsByClassName(\'modal-footer\')[0];
+
+            Xhr.modal(url, function(raw)
+            {
+                content.innerHTML = raw;
+                instance.open();
+            });
+            modal.removeChild(footer);
+        }
+        $(document).ready(function()
+        {
+            $(\'.modal\').modal();
+        });');
+    });
 }
 
 require_once($route -> file() -> path());
 
-new Utphpcore\GUI\ToDo('Authentication Login & register', 'Put commands behind authentication', 'Put admin menu behind authentication', 'Add modal support', 'Fix dropdown link color');
+new Utphpcore\GUI\ToDo('Authentication Login & register', 'Put commands behind authentication', 'Put admin menu behind authentication', 'Fix dropdown link color');
 ?>

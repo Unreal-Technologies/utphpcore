@@ -7,4 +7,5 @@ enum RoutingModes
     
     case Data;
     case Page;
+    case Modal;
 }

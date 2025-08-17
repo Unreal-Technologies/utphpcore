@@ -21,6 +21,19 @@ class Xhr
         //call ajax
         this.#wrapper('GET', sUrl, null, oSuccess, oFail);
     };
+    
+    /**
+     * @param {string} sUrl
+     * @param {function} oSuccess
+     * @param {function} oFail
+     * @returns {void}
+     */
+    static modal(sUrl, oSuccess, oFail)
+    {
+        //call ajax
+        this.#wrapper('MODAL', sUrl, null, oSuccess, oFail);
+    };
+
 
     /**
      * @param {string} sUrl

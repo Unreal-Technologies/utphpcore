@@ -28,6 +28,9 @@ class Core
      */
     private ?string $url = null;
     
+    /**
+     * @var array
+     */
     private static array $shutdownBody = [];
     
     /**
@@ -491,7 +494,6 @@ class Core
                     $children = $container -> children();
                     $container -> clear(GUI\NoHtml\Clearmodes::Children);
 
-
                     $nav -> navBar($container, new GUI\NoHtml\Materialize\Color(GUI\NoHtml\Materialize\Colors::Grey, GUI\NoHtml\Materialize\ColorOffsets::Darken4), $title);
 
                     foreach($children as $child)
@@ -515,7 +517,7 @@ class Core
                 $fab -> link('?cmd=readme', GUI\NoHtml\Materialize\Icon\Icons::ChromeReaderMode, $colorBlue, 'Readme.md creator');
                 $fab -> link('?cmd=clear', GUI\NoHtml\Materialize\Icon\Icons::BorderClear, $colorBlue, 'Clear Cache');
                 $fab -> render($body, 'fab-admin', [
-                    'direction' => '\'left\'',
+                    'direction' => '\'right\'',
                     'hoverEnabled' => 'false'
                 ]);
 

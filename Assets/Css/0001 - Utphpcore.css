@@ -1,4 +1,4 @@
-html, body
+html, body, .modal
 {
     background-color: #111111;
     color: #dddddd;
@@ -152,7 +152,32 @@ html, body
 
 .fab-admin
 {
-    right: 20px;
+    left: 10px;
     top: 80px;
     max-height: 56px;
+}
+
+.modal
+{
+    width: 98%;
+    height: 86%;
+    min-height: 86%;
+    min-width: 98%;
+    max-height: 86%;
+    max-width: 98%;
+    top: 10px;
+    border-radius: 25px;
+    padding: 0px;
+}
+
+.modal .modal-content
+{
+    width: 100%;
+    height: calc(100% - 50px);
+}
+
+.modal .modal-footer
+{
+    bottom: 0px;
+    height: 50px;
 }

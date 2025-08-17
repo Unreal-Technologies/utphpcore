@@ -71,10 +71,10 @@ create table `route`
     `id` int(11) not null auto_increment,
     `instance-id` int(11) null,
     `default` enum('true', 'false') not null default('false'),
-    `method` enum('get', 'post') not null default('get'),
+    `method` enum('get', 'post', 'modal') not null default('get'),
     `match` varchar(128) not null,
     `type` enum('file', 'function') not null default('file'),
-    `mode` enum('page', 'data') not null default('page'),
+    `mode` enum('page', 'data', 'modal') not null default('page'),
     `target` varchar(128) not null,
     `auth` enum('true', 'false') not null,
     primary key(`id`),
@@ -84,5 +84,5 @@ create table `route`
 insert into `route`(`default`, `method`, `match`, `target`, `type`, `mode`, `auth`)
 values
 ('true', 'get', 'index', 'index.php', 'file', 'page', 'false'),
-('false', 'get', 'login', 'login.php', 'file', 'page', 'false'),
+('false', 'modal', 'login', 'login.php', 'file', 'modal', 'false'),
 ('false', 'post', 'login', 'login.php', 'file', 'data', 'false');
