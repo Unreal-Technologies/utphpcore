@@ -406,11 +406,15 @@ class Core
      */
     private static function shutdown_executiontime(GUI\NoHtml\Xhtml $container): void
     {
-        $dif = microtime(true) - Data\Cache::get(self::Start);
+        $enabled = (bool)Data\Cache::get(Core::Configuration) -> get('App/Processtime/Enabled');
+        if($enabled)
+        {
+            $dif = microtime(true) - Data\Cache::get(self::Start);
 
-        $execTime = $container -> add('div@#execution-time');
-        new GUI\NoHtml\Materialize\Icon($execTime, GUI\NoHtml\Materialize\Icon\Icons::AccessTime);
-        $execTime -> text(number_format(round($dif * 1000, 4), 4, ',', '.').' ms');
+            $execTime = $container -> add('div@#execution-time');
+            new GUI\NoHtml\Materialize\Icon($execTime, GUI\NoHtml\Materialize\Icon\Icons::AccessTime);
+            $execTime -> text(number_format(round($dif * 1000, 4), 4, ',', '.').' ms');
+        }
     }
     
     /**
