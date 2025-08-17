@@ -83,7 +83,7 @@ class FloatingActionButton
             new Icon($a, $link['icon']);
         }
         
-        \Utphpcore\Core::register_shutdown_body(__CLASS__.'@'.$reference, function(\Utphpcore\GUI\NoHtml\Xhtml $body) use($jsArguments)
+        \Utphpcore\Core::register_shutdown_body(__CLASS__.'@'.$reference, function(\Utphpcore\GUI\NoHtml\Xhtml $body) use($jsArguments, $reference)
         {
             $args = [];
             foreach($jsArguments as $k => $v)
@@ -93,7 +93,7 @@ class FloatingActionButton
 
             $body -> javascript() -> text('document.addEventListener(\'DOMContentLoaded\', function() '
             . '{'
-                . 'var elems = document.querySelectorAll(\'.fixed-action-btn\');'
+                . 'var elems = document.querySelectorAll(\'.'.$reference.'\');'
                 . 'var instances = M.FloatingActionButton.init(elems, {'.implode(', ', $args).'});'
             . '});'
             );
