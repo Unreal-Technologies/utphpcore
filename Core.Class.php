@@ -156,17 +156,26 @@ class Core
             $core -> initializeAdminCommands();
             $core -> initializeRouting();
             
-            Data\Cache::create(Data\CacheTypes::Session, $core::Navigation, function()
+            if($configuration -> get('App/Main-Menu/Enabled'))
             {
-                $nav = new GUI\NoHtml\Materialize\Navigation();
-                $nav -> submenu('Authentication', function(GUI\NoHtml\Materialize\Submenu $authentication)
+                Data\Cache::create(Data\CacheTypes::Session, $core::Navigation, function() use($configuration)
                 {
-                    $authentication -> modal('Login', '/login');
-                    $authentication -> modal('Register', '/register');
+                    $nav = new GUI\NoHtml\Materialize\Navigation();
+                    if($configuration -> get('App/Main-Menu/Authentication'))
+                    {
+                        $nav -> submenu('Authentication', function(GUI\NoHtml\Materialize\Submenu $authentication) use($configuration)
+                        {
+                            $authentication -> modal('Login', '/login');
+                            if(!$configuration -> get('App/Main-Menu/OnlyLogin'))
+                            {
+                                $authentication -> modal('Register', '/register');
+                            }
+                        });
+                    }
+
+                    return $nav;
                 });
-                
-                return $nav;
-            });
+            }
         }));
     }
 
@@ -474,17 +483,21 @@ class Core
         {
             XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $container)
             {
-                $title = Data\Cache::get(Core::Configuration) -> get('App/Application/Title');
-
-                $children = $container -> children();
-                $container -> clear(GUI\NoHtml\Clearmodes::Children);
-                
                 $nav = Data\Cache::get(Core::Navigation);
-                $nav -> navBar($container, new GUI\NoHtml\Materialize\Color(GUI\NoHtml\Materialize\Colors::Grey, GUI\NoHtml\Materialize\ColorOffsets::Darken4), $title);
-                
-                foreach($children as $child)
+                if($nav !== null)
                 {
-                    $container -> append($child);
+                    $title = Data\Cache::get(Core::Configuration) -> get('App/Application/Title');
+
+                    $children = $container -> children();
+                    $container -> clear(GUI\NoHtml\Clearmodes::Children);
+
+
+                    $nav -> navBar($container, new GUI\NoHtml\Materialize\Color(GUI\NoHtml\Materialize\Colors::Grey, GUI\NoHtml\Materialize\ColorOffsets::Darken4), $title);
+
+                    foreach($children as $child)
+                    {
+                        $container -> append($child);
+                    }
                 }
                 
                 self::shutdown_version($container);
