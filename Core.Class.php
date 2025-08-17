@@ -464,38 +464,18 @@ class Core
             
             XHTML -> get('body', function(GUI\NoHtml\Xhtml $body)
             {
-//                $fabAdmin = $body -> add('div@.fixed-action-btn fab-admin');
-//                new GUI\NoHtml\Materialize\Icon($fabAdmin -> add('a@.btn-floating btn-large red'), GUI\NoHtml\Materialize\Icon\Icons::Security);
-//                
-//                $fabAdminUl = $fabAdmin -> add('ul');
-//                
-//                $data = [
-//                    '?cmd=map' => [GUI\NoHtml\Materialize\Icon\Icons::Map, 'Class Mapper'],
-//                    '?cmd=readme' => [GUI\NoHtml\Materialize\Icon\Icons::ChromeReaderMode, 'Readme.md creator'],
-//                    '?cmd=clear' => [GUI\NoHtml\Materialize\Icon\Icons::BorderClear, 'Clear Cache']
-//                ];
-//
-//                foreach($data as $cmd => $icon)
-//                {
-//                    $a = $fabAdminUl -> add('li/a@.btn-floating blue');
-//                    $a -> attributes() -> set('href', $cmd);
-//
-//                    new GUI\NoHtml\Materialize\Tooltip($a, $icon[1]);
-//                    new GUI\NoHtml\Materialize\Icon($a, $icon[0]);
-//                }
-//
-//                $script = $body -> add('script');
-//                $script -> attributes() -> set('type', 'text/javascript');
-//                $script -> text('document.addEventListener(\'DOMContentLoaded\', function() '
-//                    . '{'
-//                        . 'var elems = document.querySelectorAll(\'.fixed-action-btn\');'
-//                        . 'var instances = M.FloatingActionButton.init(elems, {'
-//                            . 'direction: \'left\', '
-//                            . 'hoverEnabled: false'
-//                        . '});'
-//                    . '});'
-//                );
+                $colorRed = new GUI\NoHtml\Materialize\Color(GUI\NoHtml\Materialize\Colors::Red, GUI\NoHtml\Materialize\ColorOffsets::Darken4);
+                $colorBlue = new GUI\NoHtml\Materialize\Color(GUI\NoHtml\Materialize\Colors::Blue, GUI\NoHtml\Materialize\ColorOffsets::Darken4);
                 
+                $fab = new GUI\NoHtml\Materialize\FloatingActionButton(GUI\NoHtml\Materialize\Icon\Icons::Security, $colorRed);
+                $fab -> link('?cmd=map', GUI\NoHtml\Materialize\Icon\Icons::Map, $colorBlue, 'Class Mapper');
+                $fab -> link('?cmd=readme', GUI\NoHtml\Materialize\Icon\Icons::ChromeReaderMode, $colorBlue, 'Readme.md creator');
+                $fab -> link('?cmd=clear', GUI\NoHtml\Materialize\Icon\Icons::BorderClear, $colorBlue, 'Clear Cache');
+                $fab -> render($body, 'fab-admin', [
+                    'direction' => '\'left\'',
+                    'hoverEnabled' => 'false'
+                ]);
+
                 foreach(self::$shutdownBody as $callback)
                 {
                     $callback($body);

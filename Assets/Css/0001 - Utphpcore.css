@@ -149,3 +149,10 @@ html, body
     color: #aa0000;
     font-weight: bold;
 }
+
+.fab-admin
+{
+    right: 20px;
+    top: 20px;
+    max-height: 56px;
+}

@@ -52,4 +52,4 @@ else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
 
 require_once($route -> file() -> path());
 
-new Utphpcore\GUI\ToDo('Authentication Login & register', 'Main menu', 'Admin menu', 'Put commands behind authentication', 'Put admin menu behind authentication', 'Option to disable process time', 'Add option to disable authentication (this wil also disable admin tools)', 'Add option to remove main menu', 'Add option to only login not register');
+new Utphpcore\GUI\ToDo('Authentication Login & register', 'Main menu', 'Put commands behind authentication', 'Put admin menu behind authentication', 'Option to disable process time', 'Add option to disable authentication (this wil also disable admin tools)', 'Add option to remove main menu', 'Add option to only login not register');
