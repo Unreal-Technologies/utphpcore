@@ -8,6 +8,7 @@ class Core
     public const InstanceID    = __CLASS__.'\\'.(0x10000002);
     public const DefaultRoute  = __CLASS__.'\\'.(0x10000003);
     public const Route         = __CLASS__.'\\'.(0x10000004);
+    public const Navigation    = __CLASS__.'\\'.(0x10000005);
     public const Root          = __CLASS__.'\\'.(0x10000010);
     public const Temp          = __CLASS__.'\\'.(0x10000011);
     public const Cache         = __CLASS__.'\\'.(0x10000012);
@@ -150,10 +151,22 @@ class Core
                     return $version;
                 });
             }
-
+            
             $core -> initializeDbs();
             $core -> initializeAdminCommands();
             $core -> initializeRouting();
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::Navigation, function()
+            {
+                $nav = new GUI\NoHtml\Materialize\Navigation();
+                $nav -> submenu('Authentication', function(GUI\NoHtml\Materialize\Submenu $authentication)
+                {
+                    $authentication -> modal('Login', '/login');
+                    $authentication -> modal('Register', '/register');
+                });
+                
+                return $nav;
+            });
         }));
     }
 
@@ -461,6 +474,19 @@ class Core
         {
             XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $container)
             {
+                $title = Data\Cache::get(Core::Configuration) -> get('App/Application/Title');
+
+                $children = $container -> children();
+                $container -> clear(GUI\NoHtml\Clearmodes::Children);
+                
+                $nav = Data\Cache::get(Core::Navigation);
+                $nav -> navBar($container, new GUI\NoHtml\Materialize\Color(GUI\NoHtml\Materialize\Colors::Grey, GUI\NoHtml\Materialize\ColorOffsets::Darken4), $title);
+                
+                foreach($children as $child)
+                {
+                    $container -> append($child);
+                }
+                
                 self::shutdown_version($container);
                 self::shutdown_executiontime($container);
                 self::shutdown_messagestack($container);

@@ -17,6 +17,16 @@ class Submenu
     /**
      * @param string $text
      * @param string $link
+     * @return void
+     */
+    public function modal(string $text, string $link): void
+    {
+        $this -> link($text, 'javascript:modal(\''.$link.'\');', null);
+    }
+    
+    /**
+     * @param string $text
+     * @param string $link
      * @param string $target
      * @return void
      */
