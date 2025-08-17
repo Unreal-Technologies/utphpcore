@@ -54,10 +54,10 @@ class FloatingActionButton
     public function render(\Utphpcore\GUI\NoHtml\Xhtml $container = null, $class = null, array $jsArguments = []): void
     {
         $hash = md5(serialize($jsArguments));
-        $reference = 'fixed-action-btn'.$hash;
+        $reference = 'fixed-action-btn';
         if($class !== null)
         {
-            $reference = $class.$hash;
+            $reference = $class;
         }
         if($container === null)
         {
@@ -83,7 +83,7 @@ class FloatingActionButton
             new Icon($a, $link['icon']);
         }
         
-        \Utphpcore\Core::register_shutdown_body(__CLASS__.'@'.$reference, function(\Utphpcore\GUI\NoHtml\Xhtml $body) use($jsArguments, $reference)
+        \Utphpcore\Core::register_shutdown_body(__CLASS__.'@'.$reference.$hash, function(\Utphpcore\GUI\NoHtml\Xhtml $body) use($jsArguments, $reference)
         {
             $args = [];
             foreach($jsArguments as $k => $v)
