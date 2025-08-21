@@ -24,9 +24,10 @@ class Debugging
     {
         $hasBody = false;
         
-        if(defined('XHTML'))
+        $xhtml = Data\Cache::get(Core::Xhtml);
+        if($xhtml !== null)
         {
-            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
+            $xhtml -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $errno, $errstr, $errfile, $errline)
             {
                 $trace = self::getTrace($body);
 
@@ -87,9 +88,10 @@ class Debugging
         self::$dumpTitle = __METHOD__;
         $hasBody = false;
         
-        if(defined('XHTML'))
+        $xhtml = Data\Cache::get(Core::Xhtml);
+        if($xhtml !== null)
         {
-            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $ex)
+            $xhtml -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use(&$hasBody, $ex)
             {
                 self::$dumpAsHtml = true;
                 $res = self::dump($ex);
@@ -160,30 +162,24 @@ class Debugging
             $path[] = [$entry['file'].':'.$entry['line'], $entry['function'].'('.implode(', ', $args).')'];
         }
         $pathReversed = array_reverse($path);
+        $xhtml = Data\Cache::get(Core::Xhtml);
         
-        if(defined('XHTML'))
+        if($xhtml !== null)
         {
             $ownContainer = $container === null ? XHTML -> get('body/div@.container')[0] : $container;
             
-//            echo '<xmp>';
-//            print_r($ownContainer);
-//            echo '</xmp>';
-            
-            //XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $body) use($pathReversed)
-            //{
-                $table = $ownContainer -> add('table@#trace');
-                $table -> add('tr/th@colspan=3') -> text('Trace');
+            $table = $ownContainer -> add('table@#trace');
+            $table -> add('tr/th@colspan=3') -> text('Trace');
 
-                foreach($pathReversed as $idx => $data)
-                {
-                    list($line, $call) = $data;
+            foreach($pathReversed as $idx => $data)
+            {
+                list($line, $call) = $data;
 
-                    $tr = $table -> add('tr');
-                    $tr -> add('td') -> text($idx + 1);
-                    $tr -> add('td') -> text($line === null ? '' : $line);
-                    $tr -> add('td') -> text($call);
-                }
-            //});
+                $tr = $table -> add('tr');
+                $tr -> add('td') -> text($idx + 1);
+                $tr -> add('td') -> text($line === null ? '' : $line);
+                $tr -> add('td') -> text($call);
+            }
         }
         else
         {
@@ -205,21 +201,23 @@ class Debugging
         {
             ob_start();
         }
-        if(defined('XHTML'))
+        
+        $xhtml = Data\Cache::get(Core::Xhtml);
+        if($xhtml !== null)
         {
             $title = self::$dumpTitle === null ? __METHOD__ : self::$dumpTitle;
             
             $hasRow = false;
-            XHTML -> get('body/div@.container/div@.row', function() use(&$hasRow)
+            $xhtml -> get('body/div@.container/div@.row', function() use(&$hasRow)
             {
                 $hasRow = true;
             });
             if(!$hasRow)
             {
-                XHTML -> get('body/div@.container')[0] -> add('div@.row');
+                $xhtml -> get('body/div@.container')[0] -> add('div@.row');
             }
             
-            XHTML -> get('body/div@.container/div@.row', function(GUI\NoHtml\Xhtml $body) use($title, $self, $arguments, $tokens)
+            $xhtml -> get('body/div@.container/div@.row', function(GUI\NoHtml\Xhtml $body) use($title, $self, $arguments, $tokens)
             {
                 $body -> add('div@.dump col s10 offset-s1 z-depth-6', function(GUI\NoHtml\Xhtml $dump) use($title, $self, $arguments, $tokens)
                 {
@@ -251,7 +249,7 @@ class Debugging
             });
             if(self::$dumpAsHtml)
             {
-                return (string)XHTML -> get('body/div@.container/div@.row/div@.dump col s10 offset-s1 z-depth-6')[0];
+                return (string)$xhtml -> get('body/div@.container/div@.row/div@.dump col s10 offset-s1 z-depth-6')[0];
             }
         }
         else

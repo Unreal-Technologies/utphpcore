@@ -3,20 +3,22 @@ namespace Utphpcore;
 
 class Core
 {
-    public const Start         = __CLASS__.'\\'.(0x10000000);
-    public const Version       = __CLASS__.'\\'.(0x10000001);
-    public const InstanceID    = __CLASS__.'\\'.(0x10000002);
-    public const DefaultRoute  = __CLASS__.'\\'.(0x10000003);
-    public const Route         = __CLASS__.'\\'.(0x10000004);
-    public const Navigation    = __CLASS__.'\\'.(0x10000005);
-    public const Root          = __CLASS__.'\\'.(0x10000010);
-    public const Temp          = __CLASS__.'\\'.(0x10000011);
-    public const Cache         = __CLASS__.'\\'.(0x10000012);
-    public const CoreAssets    = __CLASS__.'\\'.(0x10000013);
-    public const AppAssets     = __CLASS__.'\\'.(0x10000014); 
-    public const AssetManager  = __CLASS__.'\\'.(0x10000020);
-    public const Configuration = __CLASS__.'\\'.(0x10000021);
-    public const Message       = __CLASS__.'\\'.(0xffffffff); 
+    public const Start          = __CLASS__.'\\'.(0x10000000);
+    public const Version        = __CLASS__.'\\'.(0x10000001);
+    public const InstanceID     = __CLASS__.'\\'.(0x10000002);
+    public const DefaultRoute   = __CLASS__.'\\'.(0x10000003);
+    public const Route          = __CLASS__.'\\'.(0x10000004);
+    public const Navigation     = __CLASS__.'\\'.(0x10000005);
+    public const Authentication = __CLASS__.'\\'.(0x10000006);
+    public const Root           = __CLASS__.'\\'.(0x10000010);
+    public const Temp           = __CLASS__.'\\'.(0x10000011);
+    public const Cache          = __CLASS__.'\\'.(0x10000012);
+    public const CoreAssets     = __CLASS__.'\\'.(0x10000013);
+    public const AppAssets      = __CLASS__.'\\'.(0x10000014); 
+    public const AssetManager   = __CLASS__.'\\'.(0x10000020);
+    public const Configuration  = __CLASS__.'\\'.(0x10000021);
+    public const Xhtml          = __CLASS__.'\\'.(0x10000022);
+    public const Message        = __CLASS__.'\\'.(0xffffffff); 
     
     /**
      * @var int[]
@@ -73,6 +75,11 @@ class Core
             Data\Cache::create(Data\CacheTypes::Session, $core::Root, function()
             {
                 return IO\Directory::fromString(__DIR__.'/../');
+            });
+            
+            Data\Cache::create(Data\CacheTypes::Session, $core::Authentication, function()
+            {
+                return new Core\AuthenticationToken(-1, [], false);
             });
             
             Data\Cache::create(Data\CacheTypes::Session, $core::Temp, function() use($core)
@@ -166,7 +173,7 @@ class Core
                     $nav = new GUI\NoHtml\Materialize\Navigation();
                     if($configuration -> get('App/Main-Menu/Authentication'))
                     {
-                        $nav -> submenu('Authentication', function(GUI\NoHtml\Materialize\Submenu $authentication) use($configuration)
+                        $nav -> submenu('Account', function(GUI\NoHtml\Materialize\Submenu $authentication) use($configuration)
                         {
                             $authentication -> modal('Login', '/login');
                             if(!$configuration -> get('App/Main-Menu/OnlyLogin'))
@@ -372,7 +379,7 @@ class Core
         }
         
         $core = $this;
-        Data\Cache::create(Data\CacheTypes::Session, $core::InstanceID, function() use($core)
+        Data\Cache::create(Data\CacheTypes::Memory, $core::InstanceID, function() use($core)
         {
             $configuration = Data\Cache::get($core::Configuration); /* @var $configuration Data\Configuration */
 
@@ -415,8 +422,9 @@ class Core
      */
     private static function shutdown_version(GUI\NoHtml\Xhtml $container): void
     {
+        $route = Data\Cache::get(self::Route); /* @var $route Utphpcore\Data\Route|null */
         $version = Data\Cache::get(self::Version); /* @var $version = Data\Version|null */
-        if($version !== null)
+        if($version !== null && $route -> mode() === \Utphpcore\Data\RoutingModes::Page)
         {
             $container -> add('div@#version', function(GUI\NoHtml\Xhtml $div) use($version)
             {
@@ -431,8 +439,9 @@ class Core
      */
     private static function shutdown_executiontime(GUI\NoHtml\Xhtml $container): void
     {
+        $route = Data\Cache::get(self::Route); /* @var $route Utphpcore\Data\Route|null */
         $enabled = (bool)Data\Cache::get(Core::Configuration) -> get('App/Processtime/Enabled');
-        if($enabled)
+        if($enabled && $route -> mode() === \Utphpcore\Data\RoutingModes::Page)
         {
             $dif = microtime(true) - Data\Cache::get(self::Start);
 
@@ -448,20 +457,24 @@ class Core
      */
     private static function shutdown_messagestack(GUI\NoHtml\Xhtml $container): void
     {
-        $messageStack = Data\Cache::get(Core::Message);
-        while(!$messageStack -> isEmpty())
+        $route = Data\Cache::get(self::Route); /* @var $route Utphpcore\Data\Route|null */
+        if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
         {
-            $message = $messageStack -> pop();
-            $messageToast = $container -> add('script');
-            $messageToast -> attributes() -> set('type', 'text/javascript');
-            $messageToast -> text('var mToast = M.toast('
-                    . '{'
-                        . 'html: \''.$message.'\', '
-                        . 'displayLength: 15000, '
-                        . 'classes: \'toast-system-message rounded\''
-                    . '}'
-                . ');'
-            );
+            $messageStack = Data\Cache::get(Core::Message);
+            while(!$messageStack -> isEmpty())
+            {
+                $message = $messageStack -> pop();
+                $messageToast = $container -> add('script');
+                $messageToast -> attributes() -> set('type', 'text/javascript');
+                $messageToast -> text('var mToast = M.toast('
+                        . '{'
+                            . 'html: \''.$message.'\', '
+                            . 'displayLength: 15000, '
+                            . 'classes: \'toast-system-message rounded\''
+                        . '}'
+                    . ');'
+                );
+            }
         }
     }
     
@@ -482,9 +495,11 @@ class Core
      */
     public static function shutdown(): void
     {
-        if(defined('XHTML'))
+        $route = Data\Cache::get(self::Route); /* @var $route Utphpcore\Data\Route|null */
+        $xhtml = Data\Cache::get(Core::Xhtml);
+        if($xhtml !== null && $route -> mode() === \Utphpcore\Data\RoutingModes::Page)
         {
-            XHTML -> get('body/div@.container', function(GUI\NoHtml\Xhtml $container)
+            $xhtml -> get('body/div@.container', function(GUI\NoHtml\Xhtml $container)
             {
                 $nav = Data\Cache::get(Core::Navigation);
                 if($nav !== null)
@@ -501,17 +516,17 @@ class Core
                         $container -> append($child);
                     }
                 }
-                
+
                 self::shutdown_version($container);
                 self::shutdown_executiontime($container);
                 self::shutdown_messagestack($container);
             });
-            
-            XHTML -> get('body', function(GUI\NoHtml\Xhtml $body)
+
+            $xhtml -> get('body', function(GUI\NoHtml\Xhtml $body)
             {
                 $colorRed = new GUI\NoHtml\Materialize\Color(GUI\NoHtml\Materialize\Colors::Red, GUI\NoHtml\Materialize\ColorOffsets::Darken4);
                 $colorBlue = new GUI\NoHtml\Materialize\Color(GUI\NoHtml\Materialize\Colors::Blue, GUI\NoHtml\Materialize\ColorOffsets::Darken4);
-                
+
                 $fab = new GUI\NoHtml\Materialize\FloatingActionButton(GUI\NoHtml\Materialize\Icon\Icons::Security, $colorRed);
                 $fab -> link('?cmd=map', GUI\NoHtml\Materialize\Icon\Icons::Map, $colorBlue, 'Class Mapper');
                 $fab -> link('?cmd=readme', GUI\NoHtml\Materialize\Icon\Icons::ChromeReaderMode, $colorBlue, 'Readme.md creator');
@@ -526,7 +541,8 @@ class Core
                     $callback($body);
                 }
             });
-            XHTML -> get('head', function(GUI\NoHtml\Xhtml $head)
+
+            $xhtml -> get('head', function(GUI\NoHtml\Xhtml $head)
             {
                 $children = $head -> children();
                 $head -> clear();
@@ -576,7 +592,7 @@ class Core
             $ob = ob_get_clean();
             if(strlen($ob) !== 0) //Attach output buffer to Xhtml, and clear
             {
-                XHTML -> get('body', function(GUI\NoHtml\Xhtml $body) use($ob)
+                $xhtml -> get('body', function(GUI\NoHtml\Xhtml $body) use($ob)
                 {
                     $text = $ob.((string)$body);
                     $body -> clear();
@@ -585,7 +601,19 @@ class Core
             }
 
             //output
-            echo XHTML;
+            echo $xhtml;
+        }
+        else if($xhtml !== null && $route -> mode() === \Utphpcore\Data\RoutingModes::Modal)
+        {
+            $xhtml -> get('body', function(GUI\NoHtml\Xhtml $body)
+            {
+                foreach(self::$shutdownBody as $callback)
+                {
+                    $callback($body);
+                }
+            });
+            
+            echo $xhtml;
         }
     }
 }

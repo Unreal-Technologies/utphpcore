@@ -26,25 +26,24 @@ class Form
         $id = 'frm'.date('YmdHis').rand(0, 9999);
         
         $reference = null;
-        $container -> add('div@.row/form@#'.$id.'&.col '.$size -> value.($offset === null ? '' : '  offset-'.$offset -> value).'&method='.$method -> value.'&onsubmit=return Form.Validate(this);/div@.container/div@.row', function(\Utphpcore\GUI\NoHtml\Xhtml $form) use(&$reference)
+        $container -> add('div@.row/form@#'.$id.'&.col '.$size -> value.($offset === null ? '' : '  offset-'.$offset -> value).'&method='.$method -> value.'&onsubmit=return Form.Validate(this);&autocomplete=off/div@.container/div@.row', function(\Utphpcore\GUI\NoHtml\Xhtml $form) use(&$reference)
         {
             $reference = $form;
         });
         
         $this -> oForm = $reference;
-        
-        
-        $containerParent = $reference -> parent();
-        $containerParent -> add('script', function(\Utphpcore\GUI\NoHtml\Xhtml $script)
+
+        \Utphpcore\Core::register_shutdown_body(__CLASS__.'::__construct', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use($id, $reference)
         {
-            $script -> attributes() -> set('type', 'text/javascript');
-        }) -> text('$(document).ready(function()'
+            $reference -> add('div@.col s6 offset-s3 center&#form-message');
+
+            $body -> javascript() -> text('$(document).ready(function()'
             . '{'
                 . '$(\'select\').formSelect();'
                 . 'M.updateTextFields();'
                 . 'Form.initialize(document.getElementById(\''.$id.'\'));'
-            . '});'
-        );
+            . '});');
+        });
     }
     
     /**
@@ -217,21 +216,23 @@ class Form
         {
             throw new \Utphpcore\Exceptions\NotImplementedException('No form ID found.');
         }
+
+        $button = $this -> button($text, 'submit();', $optionsCb);
         
-        $button = $this -> button($text, 'submit()', $optionsCb);
-        $this -> oForm -> parent() -> add('script', function(\Utphpcore\GUI\NoHtml\Xhtml $js)
+        \Utphpcore\Core::register_shutdown_body(__CLASS__.'::submit', function(\Utphpcore\GUI\NoHtml\Xhtml $body) use($id)
         {
-            $js -> attributes() -> set('type', 'text/javascript');
-        }) -> text('function submit()'
+            $route = \Utphpcore\Data\Cache::get(\Utphpcore\Core::Route); /* @var $route \Utphpcore\Data\Route */
+
+            $body -> javascript() -> text('function submit()'
             . '{'
                 . 'let form = document.getElementById("'.$id.'");'
                 . 'if(Form.validate(form))'
                 . '{'
-                    . 'form.submit();'
+                    . 'Form.submit(form, '.($route -> mode() === \Utphpcore\Data\RoutingModes::Page ? 'false' : 'true').', \'/'.$route -> match()['slug'].'\');'
                 . '}'
-            . '}'
-        );
-        
+            . '}');
+        });
+
         return $button;
     }
     

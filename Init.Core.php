@@ -58,7 +58,7 @@ else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
     
     \Utphpcore\Core::register_shutdown_body('modal', function(Utphpcore\GUI\NoHtml\Xhtml $body)
     {
-        $body ->javascript() -> text('function modal(url)
+        $body -> javascript() -> text('function modal(url)
         {
             var modal = document.getElementById(\'utphpcoremodal\');
             var instance = M.Modal.getInstance(modal);
@@ -67,7 +67,20 @@ else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
 
             Xhr.modal(url, function(raw)
             {
-                content.innerHTML = raw;
+                let temp = document.createElement(\'div\');
+                temp.innerHTML = raw;
+                
+                let scripts = temp.getElementsByTagName(\'script\');
+                for(var i=0; i<scripts.length; i++)
+                {
+                    let script = document.createElement(\'script\');
+                    script.textContent = scripts[i].textContent;
+
+                    temp.remove(scripts[i]);
+                    document.body.appendChild(script);
+                }
+
+                content.innerHTML = temp.innerHTML;
                 instance.open();
             });
             modal.removeChild(footer);
@@ -77,9 +90,19 @@ else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
             $(\'.modal\').modal();
         });');
     });
+    
+    Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Memory, \Utphpcore\Core::Xhtml, $xhtml);
+    
+    new Utphpcore\GUI\ToDo('Authentication Logout & Register', 'Put commands behind authentication', 'Put admin menu behind authentication', 'Fix dropdown link color', 'Update menu after login & logout, based on authentication data', 'Add user password change');
+}
+else if($route -> mode() === \Utphpcore\Data\RoutingModes::Modal)
+{
+    $xhtml = new \Utphpcore\GUI\NoHtml\Xhtml('<!DOCTYPE html>');
+    $xhtml -> add('head');
+    $xhtml -> add('body/div@.container');
+    
+    Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Memory, \Utphpcore\Core::Xhtml, $xhtml);
 }
 
 require_once($route -> file() -> path());
-
-new Utphpcore\GUI\ToDo('Authentication Login & register', 'Put commands behind authentication', 'Put admin menu behind authentication', 'Fix dropdown link color');
 ?>

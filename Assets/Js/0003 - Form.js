@@ -18,6 +18,67 @@ Math.roundFloat = function(number, decimals)
 
 class Form
 {
+    static submit(form, isXhr, slug)
+    {
+        if(!isXhr)
+        {
+            form.submit();
+        }
+        else
+        {
+            Xhr.post(slug, Form.sData(form), function(data)
+            {
+               try
+               {
+                    let obj = JSON.parse(data);
+                    if(obj['output-buffer'] !== null && obj['output-buffer'] !== '')
+                    {
+                        M.toast({ html: obj['output-buffer'], displayLength: 15000, classes: 'toast-system-message rounded' });
+                    }
+
+                    if(obj['success'])
+                    {
+                        M.toast({ html: obj['message'], displayLength: 3000, classes: 'toast-system-message rounded' });
+                        let modalElement = document.getElementById('utphpcoremodal');
+                        let modalInstance = M.Modal.getInstance(modalElement);
+
+                        modalInstance.close();
+                        if(obj['reload'])
+                        {
+                            window.location.reload();
+                        }
+                    }
+                    else
+                    {
+                        let formMessage = document.getElementById('form-message');
+                        formMessage.innerHTML = obj['message'];
+                        formMessage.style.color = obj['success'] ? 'green' : 'red';
+                    }
+               }
+               catch(ex)
+               {
+                   M.toast({ html: ex, displayLength: 15000, classes: 'toast-system-message rounded' });
+                   M.toast({ html: data, displayLength: 15000, classes: 'toast-system-message rounded' });
+               }
+            });
+        }
+    };
+    
+    static sData(form)
+    {
+        let pairs = [];
+        let elements = $('#'+form.id+' input, #'+form.id+' select');
+        for(let i=0; i<elements.length; i++)
+        {
+            let element = elements[i];
+            let value = element.value;
+            let name = element.name;
+            pairs[i] = name+'='+value;
+        }
+        
+        return pairs.join('&');
+    };
+
     static validate(form)
     {
         let elements = $('#'+form.id+' input, #'+form.id+' select');

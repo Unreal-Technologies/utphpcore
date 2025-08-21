@@ -61,7 +61,8 @@ class FloatingActionButton
         }
         if($container === null)
         {
-            $container = XHTML -> get('body')[0];
+            $xhtml = Data\Cache::get(Core::Xhtml);
+            $container = $xhtml -> get('body')[0];
         }
         
         $fabAdmin = $container -> add('div@.fixed-action-btn'.($class === null ? null : ' '.$class));

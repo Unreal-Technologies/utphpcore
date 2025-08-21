@@ -7,19 +7,20 @@ class ToDo
     {
         $self = debug_backtrace()[0];
         
-        if(defined('XHTML'))
+        $xhtml = \Utphpcore\Data\Cache::get(\Utphpcore\Core::Xhtml);
+        if($xhtml !== null)
         {
             $hasRow = false;
-            XHTML -> get('body/div@.container/div@.row', function() use(&$hasRow)
+            $xhtml -> get('body/div@.container/div@.row', function() use(&$hasRow)
             {
                 $hasRow = true;
             });
             if(!$hasRow)
             {
-                XHTML -> get('body/div@.container')[0] -> add('div@.row');
+                $xhtml -> get('body/div@.container')[0] -> add('div@.row');
             }
             
-            XHTML -> get('body/div@.container/div@.row', function(NoHtml\Xhtml $container) use($arguments, $self)
+            $xhtml -> get('body/div@.container/div@.row', function(NoHtml\Xhtml $container) use($arguments, $self)
             {
                 $children = $container -> children();
                 $container -> clear(NoHtml\Clearmodes::Children);

@@ -51,10 +51,6 @@ class Xhtml implements IXhtml
     {
         $this -> sPrefix = $prefix;
         $this -> oAttributes = new Attributes();
-        if(!defined('XHTML'))
-        {
-            define('XHTML', $this);
-        }
     }
     
     /** 
@@ -122,7 +118,8 @@ class Xhtml implements IXhtml
         $parentPath = implode('/', $parts);
         
         $parent = null;
-        XHTML -> get($parentPath, function(Xhtml $object) use(&$parent)
+        $xhtml = \Utphpcore\Data\Cache::get(\Utphpcore\Core::Xhtml);
+        $xhtml -> get($parentPath, function(Xhtml $object) use(&$parent)
         {
             $parent = $object;
         });
