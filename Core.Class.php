@@ -63,6 +63,14 @@ class Core
         throw new Data\Exceptions\NotImplementedException($path);
     }
 
+    public static function logout(): void
+    {
+        Data\Cache::set(Data\CacheTypes::Session, Core::Authentication, new Core\AuthenticationToken(-1, [], false));
+        self::MainMenu(true);
+        header('location: /');
+        exit;
+    }
+    
     /**
      * @return void
      */
@@ -208,7 +216,7 @@ class Core
             {
                 if($token -> isAuthenticated())
                 {
-                    $authentication -> modal('Logout', '/logout');
+                    $authentication -> link('Logout', '/logout');
                 }
                 else
                 {
@@ -253,10 +261,11 @@ class Core
     private function initializeRouting(): void
     {
         //Get DB Instance
+        $token = Data\Cache::get(Core::Authentication); /* @var $token Core\AuthenticationToken */
         $coreDbc = IO\Data\Db\Database::getInstance('Core'); /* @var $coreDbc IO\Data\Db\Database */
         $instanceId = Data\Cache::get(self::InstanceID);
-        $authenticated = false;
-        $isServerAdmin = false;
+        
+        $authenticated = $token -> isAuthenticated();
 
         Data\Cache::create(Data\CacheTypes::Session, self::DefaultRoute, function() use($coreDbc, $authenticated, $instanceId)
         {
@@ -278,7 +287,7 @@ class Core
             return $defaultRoute;
         });
         
-        Data\Cache::create(Data\CacheTypes::Memory, self::Route, function() use($coreDbc, $authenticated, $isServerAdmin, $instanceId)
+        Data\Cache::create(Data\CacheTypes::Memory, self::Route, function() use($coreDbc, $authenticated, $instanceId)
         {
             $defaultRoute = Data\Cache::get(self::DefaultRoute);
 
@@ -295,7 +304,6 @@ class Core
                 . 'where ( `instance-id` = '.$instanceId.' or `instance-id` is null ) '
                 . 'and ((`match` regexp \''.implode('\' or `match` regexp \'', $possibilities).'\') or (`match` = "'.$defaultRoute.'" and `default` = "true")) '
                 . ($authenticated ? '' : 'and `auth` = "false" ')
-                . ($isServerAdmin ? '' : 'and `type` != \'function\' ')
             );
 
             //Register possible routes
