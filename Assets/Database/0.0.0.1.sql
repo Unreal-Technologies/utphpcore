@@ -36,12 +36,22 @@ create table `instance`
     primary key(`id`)
 )Engine=InnoDB;
 
+create table `person`
+(
+    `id` int(11) not null auto_increment,
+    `firstname` varchar(32) not null,
+    `lastname` varchar(32) not null,
+    primary key(`id`)
+)Engine=InnoDB;
+
 create table `user`
 (
     `id` int(11) not null auto_increment,
     `username` varchar(32) not null,
     `password` blob not null,
-    primary key(`id`)
+    `person-id` int(11) not null,
+    primary key(`id`),
+    foreign key(`person-id`) references `person`(`id`) on delete restrict
 )Engine=InnoDB;
 
 create table `user-instance`
@@ -57,9 +67,13 @@ create table `user-instance`
 set @seed = null;
 select `value` into @seed from `options` where `key` = 'seed';
 
-insert into `user`(`username`, `password`)
+insert into `person`(`id`, `firstname`, `lastname`)
 values
-('admin', user_password(@seed));
+(1, 'Admin', 'Administrator');
+
+insert into `user`(`username`, `password`, `person-id`)
+values
+('admin', user_password(@seed), 1);
 
 set @adminId = last_insert_id();
 
@@ -87,4 +101,5 @@ values
 ('false', 'modal', 'login', 'login.php', 'file', 'modal', 'false'),
 ('false', 'post', 'login', 'login.php', 'file', 'data', 'false'),
 ('false', 'modal', 'register', 'register.php', 'file', 'modal', 'false'),
-('false', 'post', 'register', 'register.php', 'file', 'data', 'false');
+('false', 'post', 'register', 'register.php', 'file', 'data', 'false'),
+('false', 'get', 'logout', '\\Utphpcore\\Core::logout', 'function', 'data', 'true');

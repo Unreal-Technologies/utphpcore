@@ -182,3 +182,18 @@ html, body, .modal, input
     bottom: 0px;
     height: 50px;
 }
+
+.navbar-fixed .chip
+{
+    background-color: #333333;
+}
+
+.dropdown-content li a
+{
+    color: #bbbbbb;
+}
+
+.dropdown-content li a:hover
+{
+    background-color: #444444;
+}

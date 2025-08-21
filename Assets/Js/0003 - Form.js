@@ -31,9 +31,11 @@ class Form
                try
                {
                     let obj = JSON.parse(data);
+                    let allowReload = true;
                     if(obj['output-buffer'] !== null && obj['output-buffer'] !== '')
                     {
-                        M.toast({ html: obj['output-buffer'], displayLength: 15000, classes: 'toast-system-message rounded' });
+                        M.toast({ html: obj['output-buffer'], displayLength: 30000, classes: 'toast-system-message rounded' });
+                        allowReload = false;
                     }
 
                     if(obj['success'])
@@ -43,7 +45,7 @@ class Form
                         let modalInstance = M.Modal.getInstance(modalElement);
 
                         modalInstance.close();
-                        if(obj['reload'])
+                        if(obj['reload'] && allowReload)
                         {
                             window.location.reload();
                         }

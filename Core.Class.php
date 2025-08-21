@@ -166,29 +166,87 @@ class Core
             $core -> initializeAdminCommands();
             $core -> initializeRouting();
             
-            if($configuration -> get('App/Main-Menu/Enabled'))
-            {
-                Data\Cache::create(Data\CacheTypes::Session, $core::Navigation, function() use($configuration)
-                {
-                    $nav = new GUI\NoHtml\Materialize\Navigation();
-                    if($configuration -> get('App/Main-Menu/Authentication'))
-                    {
-                        $nav -> submenu('Account', function(GUI\NoHtml\Materialize\Submenu $authentication) use($configuration)
-                        {
-                            $authentication -> modal('Login', '/login');
-                            if(!$configuration -> get('App/Main-Menu/OnlyLogin'))
-                            {
-                                $authentication -> modal('Register', '/register');
-                            }
-                        });
-                    }
-
-                    return $nav;
-                });
-            }
+            self::MainMenu(false);
         }));
     }
 
+    /**
+     * @param Data\Configuration $configuration
+     * @return GUI\NoHtml\Materialize\Navigation
+     */
+    private static function MainMenuConfiguration(Data\Configuration $configuration): GUI\NoHtml\Materialize\Navigation
+    {
+        $token = Data\Cache::get(Core::Authentication); /* @var $token Core\AuthenticationToken */
+        $nav = new GUI\NoHtml\Materialize\Navigation();
+        if($configuration -> get('App/Main-Menu/Authentication'))
+        {
+            $authText = 'Account';
+            if($token -> isAuthenticated())
+            {
+                $dbc = IO\Data\Db\Database::getInstance('Core');
+                
+                $icon = 'http://127.0.0.1/Utphpcore/Assets/Images/favicon.ico';
+                $userId = $token -> userId();
+                
+                $dbc -> query('select '
+                        . 'concat(`person`.`firstname`, " ", `person`.`lastname`) as `name` '
+                        . 'from `person` '
+                        . 'inner join `user` on `user`.`person-id` = `person`.`id`'
+                        . 'where `user`.`id` = '.$userId);
+                $res = $dbc -> execute();
+                $text = $res['aResults'][0]['name'];
+
+                if($token -> isAdministrator())
+                {
+                    $text = '<b style="color: gold;">'.$text.'</b>';
+                }
+                
+                $authText = '<div class="chip"><img src="'.$icon.'" />'.$text.'</div>';
+            }
+            
+            $nav -> submenu($authText, function(GUI\NoHtml\Materialize\Submenu $authentication) use($configuration, $token)
+            {
+                if($token -> isAuthenticated())
+                {
+                    $authentication -> modal('Logout', '/logout');
+                }
+                else
+                {
+                    $authentication -> modal('Login', '/login');
+                    if(!$configuration -> get('App/Main-Menu/OnlyLogin'))
+                    {
+                        $authentication -> modal('Register', '/register');
+                    }
+                }
+            });
+        }
+
+        return $nav;
+    }
+    
+    /**
+     * @param bool $update
+     * @return void
+     */
+    public static function MainMenu(bool $update): void
+    {
+        $configuration = Data\Cache::get(Core::Configuration); /* @var $configuration Data\Configuration */
+        if($configuration -> get('App/Main-Menu/Enabled'))
+        {
+            if($update)
+            {
+                Data\Cache::set(Data\CacheTypes::Session, Core::Navigation, Core::MainMenuConfiguration($configuration));
+            }
+            else
+            {
+                Data\Cache::create(Data\CacheTypes::Session, Core::Navigation, function() use($configuration)
+                {
+                    return Core::MainMenuConfiguration($configuration);
+                });
+            }
+        }
+    }
+    
     /**
      * @return void
      */

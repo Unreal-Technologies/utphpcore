@@ -37,6 +37,8 @@ else
     $token = new \Utphpcore\Core\AuthenticationToken($userId, $instanceIds, $isAdministrator);
     Utphpcore\Data\Cache::set(Utphpcore\Data\CacheTypes::Session, \Utphpcore\Core::Authentication, $token);
     
+    \Utphpcore\Core::MainMenu(true);
+    
     $result = new \Utphpcore\Core\Modalresult(true, 'Login Success.');
     $result -> reload();
     

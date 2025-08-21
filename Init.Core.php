@@ -93,7 +93,7 @@ else if($route -> mode() === \Utphpcore\Data\RoutingModes::Page)
     
     Utphpcore\Data\Cache::set(\Utphpcore\Data\CacheTypes::Memory, \Utphpcore\Core::Xhtml, $xhtml);
     
-    new Utphpcore\GUI\ToDo('Authentication Logout & Register', 'Put commands behind authentication', 'Put admin menu behind authentication', 'Fix dropdown link color', 'Update menu after login & logout, based on authentication data', 'Add user password change');
+    new Utphpcore\GUI\ToDo('Authentication Logout & Register', 'Put commands behind authentication', 'Put admin menu behind authentication', 'Add user password change', 'User icon selection / upload', 'Update routing after login / logout, based on authentication data');
 }
 else if($route -> mode() === \Utphpcore\Data\RoutingModes::Modal)
 {

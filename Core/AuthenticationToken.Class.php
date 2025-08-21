@@ -33,10 +33,10 @@ class AuthenticationToken
     /**
      * @return bool
      */
-    public function IsAuthenticated(): bool
+    public function isAuthenticated(): bool
     {
         $isAuthenticated = false;
-        $currentInstanceId = Utphpcore\Data\Cache::get(\Utphpcore\Core::InstanceID);
+        $currentInstanceId = \Utphpcore\Data\Cache::get(\Utphpcore\Core::InstanceID);
         if(in_array($currentInstanceId, $this -> instanceIds) || $this -> isAdministrator)
         {
             $isAuthenticated = true;
@@ -47,7 +47,7 @@ class AuthenticationToken
     /**
      * @return bool
      */
-    public function IsAdministrator(): bool
+    public function isAdministrator(): bool
     {
         return $this -> isAdministrator;
     }
@@ -55,7 +55,7 @@ class AuthenticationToken
     /**
      * @return int
      */
-    public function UserId(): int
+    public function userId(): int
     {
         return $this -> userId;
     }
